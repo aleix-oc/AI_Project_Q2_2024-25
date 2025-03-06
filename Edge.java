@@ -4,7 +4,7 @@ public class Edge {
     private int weight;
     private static int id1;
     private static int id2;
-    //tipo tiene 3 valores: c, arista entre centro; s, arista entre sensores; x, arista centro-sensor
+    //tipo tiene 2 valores: s, arista entre sensores; c, arista centro-sensor
     private static char tipo;
 
     public Edge(int i1, int i2, char t) {
