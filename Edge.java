@@ -1,4 +1,3 @@
-package javadoc;
 
 public class Edge {
     private int weight;
@@ -13,7 +12,25 @@ public class Edge {
         tipo = t;
     }
 
+    public static int getId1() {
+        return id1;
+    }
+
+    public static int getId2() {
+        return id2;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
     public void setWeight(int w) {
         weight = w;
     }
+
+    public static char getTipo() {
+        return tipo;
+    }
+
+
 }
