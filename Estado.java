@@ -1,4 +1,4 @@
-import package.Red.*;
+import Red.*;
 
 public class Estado {
     private static Graph representacion;
@@ -11,5 +11,19 @@ public class Estado {
 
     private void complexSol() {
 
+    }
+
+    /// OPERATORS
+    private boolean ableErase() {return representacion.ableErase();}
+
+    //public??
+    public void eraseEdge() {
+        if (ableErase()) representacion.eraseEdge();
+    }
+
+    private boolean ableAdd() {return representacion.ableAdd();}
+
+    public void addEdge() {
+        if (ableAdd()) representacion.addEdge();
     }
 }
