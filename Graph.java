@@ -65,7 +65,11 @@ public class Graph {
         return adjs.containsKey(id2) && adjs.get(id2).size() > 3;
     }
 
-
+    //Operadores:
+    // - cambiar nodo destino
+ //- cambiar nodo origen
+ //- añadir conexión
+ //- eliminar conexión
 
 
     //AUXILIARES PARA OPERADORES
