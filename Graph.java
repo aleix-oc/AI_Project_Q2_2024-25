@@ -31,7 +31,6 @@ public class Graph {
         for (int i = 0; i < ssize; ++i) {
             for (int j = 0; j < csize; ++j) {
                 adjs.computeIfAbsent(j, k -> new ArrayList<>()).add(new Edge(i, j, 'c'));
-                adjs.computeIfAbsent(i, k -> new ArrayList<>()).add(new Edge(j, i, 'c'));
             }
         }
 
@@ -46,7 +45,6 @@ public class Graph {
             for (int j = 0; j < min(25, ssize); ++j) {
                 int next = myRandom.nextInt(ssize);
                 if (!limit3(next)) {
-                    adjs.computeIfAbsent(next, k -> new ArrayList<>()).add(new Edge(i, next, 'c'));
                     adjs.computeIfAbsent(i, k -> new ArrayList<>()).add(new Edge(next, i, 'c'));
                 }
             }
@@ -58,7 +56,6 @@ public class Graph {
                 int next = myRandom.nextInt(ssize);
                 if (i != next && !limit3(next) && !limit3(i)) {
                     adjs.computeIfAbsent(next, k -> new ArrayList<>()).add(new Edge(i, next, 's'));
-                    adjs.computeIfAbsent(i, k -> new ArrayList<>()).add(new Edge(next, i, 's'));
                 }
             }
         }
