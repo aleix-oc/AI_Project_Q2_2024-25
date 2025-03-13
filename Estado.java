@@ -1,4 +1,4 @@
-import Red.*;
+
 
 public class Estado {
     private static Graph representacion;
@@ -14,16 +14,20 @@ public class Estado {
     }
 
     /// OPERATORS
-    private boolean ableErase() {return representacion.ableErase();}
+    public boolean ableErase() {return representacion.ableErase();}
 
     //public??
     public void eraseEdge() {
         if (ableErase()) representacion.eraseEdge();
     }
 
-    private boolean ableAdd() {return representacion.ableAdd();}
+    public boolean ableAdd() {return representacion.ableAdd();}
 
     public void addEdge() {
         if (ableAdd()) representacion.addEdge();
     }
+
+    public int heuristica() {} //habrá que implementar funciones privadas de calculo de coste y datos aunque sea en grafo.
+
+
 }
