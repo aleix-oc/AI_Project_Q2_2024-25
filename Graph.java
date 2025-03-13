@@ -5,6 +5,7 @@ import static java.lang.Math.min;
 import static java.lang.Math.random;
 
 public class Graph {
+    //Quiza va bien guardar el numero actual de aristas, la suma de tamaños de todos los arraylists
     private int ssize;
     private int csize;
     private static Sensores Snodes;
@@ -79,47 +80,95 @@ public class Graph {
     }
     //solo por probar borro la arista con mayor coste, sino tambien podemos borrar una random hay que experimentar
     public void eraseEdge() {
-        int maxi = -1,maxj = -1,maxw = -1;
-        for (Iterator<HashMap.Entry<Integer, ArrayList<Edge>>> it = adjs.entrySet().iterator();it.hasNext();) {
-            HashMap.Entry<Integer,ArrayList<Edge>> entry = it.next();
-            ArrayList<Edge> adj = entry.getValue();
-            for (int i = 0; i < adj.size(); ++i) {
-                if (adj.get(i).getWeight() > maxw) {
-                    maxw = adj.get(i).getWeight();
-                    maxi = entry.getKey();
-                    maxj = i;
-                }
-            }
+        Random r = new Random();
+        int i = r.nextInt(ssize);//otra vez el problema de la adjacency list
+        while (true) {
+            if (adjs.containsKey(i)) break;
+            i = r.nextInt(ssize);
         }
-        adjs.get(maxi).remove(maxj);
-        if (adjs.get(maxi).isEmpty()) adjs.remove(maxi);
+        int j = r.nextInt(adjs.get(i).size());
+        adjs.get(i).remove(j);
+        if (adjs.get(i).isEmpty()) adjs.remove(i);
     }
 
     public boolean ableAdd() {
-        //deberiamos hablar lo de la cantidad de aristas, aqui basta con mirar
-        //return adjs.size() < Snodes.size()*3 +...
-        return true;
+        return adjs.size() < ssize*3 + csize*25;
     }
 
+    //Pondre lo de dentro de if else en otra funcion auxiliar por legibilidad seguramente
     public void addEdge() {
-        boolean found = false;
-        while (!found) {
+        while (true) {
             int rand = (int) random();
-            rand %= ssize;
-            if (adjs.containsKey(rand)) {
-                if (adjs.get(rand).size() < 3) {
-                    found = true;
-                    //añadir arista, puedo coger una a s rand o a c rand pero hay q hablar conds                }
+            int aux = rand % 2;
+            char mode;
+            if (aux == 0) rand %= ssize;
+            else rand %= csize;
+            //rand %= size de uno de los 2 pero primero debemos hablar lo de la adjlist si ves este push hoy tranqui mañana lo entenderas pero mejor hablarlo en persona
+            if (adjs.containsKey(rand) && adjs.get(rand).size() < 3) {
+                int srand = (int) random();
+                while (true) {
+                    srand %= ssize; //da igual que rand(el primer indice) sea s o c, el siguiente siempre es s
+                    if (srand != rand) break;
                 }
+                if (aux == 0) adjs.get(rand).add(new Edge(srand, rand, 's'));
+                else adjs.get(rand).add(new Edge(srand, rand, 'c'));
+                //añadir arista, puedo coger una a s rand o a c rand pero hay q hablar conds
+                return;
             }
-            else {
-                found = true;
+            else if(!adjs.containsKey(rand)) {
+                adjs.put(rand,new ArrayList<Edge>());
+                int srand;
+                while (true) {
+                    srand = (int) random();
+                    srand %= ssize; //da igual que rand(el primer indice) sea s o c, el siguiente siempre es s
+                    if (srand != rand) break;
+                }
+                if (aux == 0) adjs.get(rand).add(new Edge(srand, rand, 's'));
+                else adjs.get(rand).add(new Edge(srand, rand, 'c'));
+                return;
                 //ídem
             }
         }
     }
 
-    public void switchEdge() {
-        //hay 3 casos,
+
+    public bool ableSwitch() {
+        return true;
+        //tan costoso de mirar que hace que este operador no valga la pena, pendiente discutir
+    }
+
+    //en este caso no hace falta hacer erase y luego add, asi es mas eficiente
+    public void switchOrigin() {
+        Random r = new Random();
+        int i = r.nextInt(ssize);//otra vez el problema de la adjacency list
+        while (true) {
+            if (adjs.containsKey(i)) break;
+            i = r.nextInt(ssize);
+        }
+        int j = r.nextInt(adjs.get(i).size());
+        adjs.get(i).get(j).setId1(4);
+    }
+
+    private bool ableSwitchDestination() {
+        return true;
+        //lo malo es que hay que tener en cuenta las aristas del nodo al que le quitaremos una
+        //esto es porque hay que ver si nos queda capacidad para aristas sin contar el nodo destination previo 
+    }
+
+    public void switchDestination() {
+        //if (ableSwitchDsetination)
+        //lo unico que s eme ocurre es hacer la comprobacion aqui, sera costoso...
+        Random r = new Random();
+        int i = r.nextInt(ssize);//otra vez el problema de la adjacency list
+        while (true) {
+            if (adjs.containsKey(i)) break;
+            i = r.nextInt(ssize);
+        }
+        int j = r.nextInt(adjs.get(i).size());
+        j = adjs.get(i).get(j).getId1();
+        //i = bucle hasta encontrar nuevo destino VÁLIDO
+        //eraseSpecificEdge(x),
+        //la i y la j seran el nuevo destino y el origen respectivamente
+        //addSpecificEdge(i,j), implementación trivial
     }
 }
