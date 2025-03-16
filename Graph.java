@@ -118,7 +118,7 @@ public class Graph {
     //es abusar de atributos? tu decides
     public boolean ableAdd() {
         for (int i = 0; i < ssize; ++i) {
-            if (adjs.get(i) == null) return true;
+            if (!adjs.containsKey(i) || adjs.get(i).isEmpty()) { return true; } //solo si no hacemos erase de las vacías
         }
         return false;
     }
@@ -126,13 +126,23 @@ public class Graph {
     public void addEdge() {
         Random r = new Random();
         int i = r.nextInt(ssize);
-        while (true) {
-            if (adjs.get(i) == null) break;
+        while (adjs.containsKey(i)) {
             i = r.nextInt(ssize);
         }
         //As we know we are able to add one, we just try with certainty across all the nodes
-        for (int j = 0; j < csize; ++j) if (Ccons[j] < 25) {adjs.put(i,new Edge(i,j,'c')); return;}
-        for (int j = 0; j < ssize; ++j) if (Ccons[j] < 3) {adjs.put(i,new Edge(i,j,'s')); return;}
+        for (int j = 0; j < csize; ++j) {
+            if (Ccons[j] < 25) {
+                adjs.computeIfAbsent(i, k -> new HashSet<>()).add(new Edge(i, j, 'c'));
+                return;
+            }
+        }
+
+        for (int j = 0; j < ssize; ++j) {
+            if (Scons[j] < 3) {
+                adjs.computeIfAbsent(i, k -> new HashSet<>()).add(new Edge(i, j, 's'));
+                return;
+            }
+        }
     }
 
 
