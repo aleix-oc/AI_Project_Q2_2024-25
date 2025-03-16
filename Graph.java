@@ -3,7 +3,6 @@ import IA.Red.*;
 import java.util.*;
 import static java.lang.Math.min;
 
-//UN SENSOR SOLO SACA UNA ARISTA VERDAD??? MUY IMPORTANTE
 public class Graph {
     private int[] Scons;
     private int[] Ccons;
@@ -11,7 +10,7 @@ public class Graph {
     private int csize;
     private static Sensores Snodes;
     private static CentrosDatos Cnodes;
-    private HashMap<Integer, HashSet<Edge>> adjs;
+    private HashMap<Integer, Edge> adjs;
 
     public Graph(Sensores s, CentrosDatos c) {
         Snodes = s;
@@ -23,7 +22,6 @@ public class Graph {
         adjs = new HashMap<>();
     }
 
-    //Nota: Mirar si el nextint no repetirá, hay que estar seguros
     public void simpleSolution() {
         Random myRandom = new Random();
         // Añadimos aristas entre sensores y centros de datos, con un límite de 25 conexiones por centro de datos
@@ -32,22 +30,24 @@ public class Graph {
                 int next = myRandom.nextInt(ssize);
                 Edge newEdge = new Edge(next, i, 'c');
 
-                HashSet<Edge> edges = adjs.computeIfAbsent(next, k -> new HashSet<>());
-                if (edges.add(newEdge)) {
+                // Si no hay una arista existente para el nodo 'next', la añadimos
+                if (!adjs.containsKey(next)) {
+                    adjs.put(next, newEdge);
                     ++Ccons[i];
                 }
             }
         }
 
 
-        // Añadimos a cada sensor un maximo de 3 aristas hacia él mismo
+        // Añadimos a cada sensor una arista hacia él mismo
         for (int i = 0; i < ssize; ++i) {
-            for (int j = 0; j < min(3, ssize - 1); ++j) {
+            for (int j = 0; j < min(1, ssize - 1); ++j) {
                 int next = myRandom.nextInt(ssize);
                 if (i != next) {
                     Edge newEdge = new Edge(next, i, 's');
-                    HashSet<Edge> edges = adjs.computeIfAbsent(i, k -> new HashSet<>());
-                    if (edges.add(newEdge)) {
+                    // Si no hay una arista existente para el nodo 'i', la añadimos
+                    if (!adjs.containsKey(i)) {
+                        adjs.put(next, newEdge);
                         ++Scons[i];
                     }
                 }
@@ -56,22 +56,14 @@ public class Graph {
     }
 
     //Operadores:
-    // - cambiar nodo destino
- //- cambiar nodo origen
+    // - cambiar nodo destino //hacerlo entre 2 aristas
+ //- cambiar nodo origen //hacerlo entre 2 aristas
  //- añadir conexión
  //- eliminar conexión
 
 
     public boolean ableErase() {
-        /* // Check if there is any node with at least one edge
-        for (HashSet<Edge> edges : adjs.values()) {
-            if (!edges.isEmpty()) {
-                return true; // Found a node with at least one edge
-            }
-        }
-        return false; // No nodes with edges
-        */
-        return !adjs.isEmpty();
+        return !adjs.isEmpty(); //si fuesen nulls iria igual bien
     }
 
     public void eraseEdge() {
@@ -79,48 +71,34 @@ public class Graph {
         int i = r.nextInt(ssize);
 
         // Find a non-empty node
-        while (!adjs.containsKey(i) || adjs.get(i).isEmpty()) {
+        while (!adjs.containsKey(i)) {
             i = r.nextInt(ssize);
         }
 
-        HashSet<Edge> edges = adjs.get(i);
-        int setSize = edges.size();
+        Edge selectedEdge = adjs.get(i);
+        // Eliminar la arista del mapa
+        adjs.remove(i);
 
-        // Select a random edge from the set
-        int edgeIndex = r.nextInt(setSize);
-        Iterator<Edge> it = edges.iterator();
-
-        Edge selectedEdge = null;
-        for (int j = 0; j <= edgeIndex; ++j) {
-            selectedEdge = it.next();
-        }
-
-        // Remove the selected edge
-        it.remove();
-
-        // Update the connection counters
+        // Actualizar los contadores de conexiones
         char t = selectedEdge.getTipo();
         int id = selectedEdge.getId2();
 
         if (t == 's') --Scons[id];
         else --Ccons[id];
-
-        // Remove empty sets from the map
-        //if (edges.isEmpty()) {
-        //    adjs.remove(i);
-       // }
     }
 
 
-    //MUY IMPORTANTE:Nunca llegaremos a tener 3*ssize+25*csize porque solo sale una edge de cada sensor
-    //haria una variable total correspondiente a las casillas del hash no nulas y luego
-    //return total < ssize;
-    //es abusar de atributos? tu decides
+    //considerando max edges = ssize
     public boolean ableAdd() {
-        for (int i = 0; i < ssize; ++i) {
-            if (!adjs.containsKey(i) || adjs.get(i).isEmpty()) { return true; } //solo si no hacemos erase de las vacías
+        return adjs.size() < ssize;
+        /*
+         for (int i = 0; i < ssize; ++i) {
+            if (!adjs.containsKey(i) || adjs.get(i) == null) {
+                return true;
+            }
         }
         return false;
+         */
     }
 
     public void addEdge() {
@@ -129,17 +107,17 @@ public class Graph {
         while (adjs.containsKey(i)) {
             i = r.nextInt(ssize);
         }
-        //As we know we are able to add one, we just try with certainty across all the nodes
+        // Como sabemos que podemos añadir una, intentamos con certeza en todos los nodos
         for (int j = 0; j < csize; ++j) {
             if (Ccons[j] < 25) {
-                adjs.computeIfAbsent(i, k -> new HashSet<>()).add(new Edge(i, j, 'c'));
+                adjs.put(i, new Edge(i, j, 'c'));
                 return;
             }
         }
 
         for (int j = 0; j < ssize; ++j) {
             if (Scons[j] < 3) {
-                adjs.computeIfAbsent(i, k -> new HashSet<>()).add(new Edge(i, j, 's'));
+                adjs.put(i, new Edge(i, j, 's'));
                 return;
             }
         }
