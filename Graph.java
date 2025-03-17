@@ -3,6 +3,7 @@ import IA.Red.*;
 import java.util.*;
 import static java.lang.Math.min;
 
+//𓃵 MESSI
 public class Graph {
     private int[] Scons;
     private int[] Ccons;
@@ -23,176 +24,74 @@ public class Graph {
     }
 
     public void simpleSolution() {
-        Random myRandom = new Random();
-        // Añadimos aristas entre sensores y centros de datos, con un límite de 25 conexiones por centro de datos
-        for (int i = 0; i < csize; ++i) {
-            for (int j = 0; j < min(25, ssize); ++j) {
-                int next = myRandom.nextInt(ssize);
-                Edge newEdge = new Edge(next, i, 'c');
-
-                // Si no hay una arista existente para el nodo 'next', la añadimos
-                if (!adjs.containsKey(next)) {
-                    adjs.put(next, newEdge);
-                    ++Ccons[i];
-                }
-            }
+        int i = 0;//Sensor
+        int j = 0;//Centro
+        while (true) {
+            if (i == ssize) return;//Hemos puesto todos los sensores
+            if (j == csize) break;
+            adjs.put(i,new Edge(i,j,'c'));
+            ++Ccons[j];
+            if (Ccons[j] == 25) ++j;
+            ++i;
         }
-
-
-        // Añadimos a cada sensor una arista hacia él mismo
-        for (int i = 0; i < ssize; ++i) {
-            for (int j = 0; j < min(1, ssize - 1); ++j) {
-                int next = myRandom.nextInt(ssize);
-                if (i != next) {
-                    Edge newEdge = new Edge(next, i, 's');
-                    // Si no hay una arista existente para el nodo 'i', la añadimos
-                    if (!adjs.containsKey(i)) {
-                        adjs.put(next, newEdge);
-                        ++Scons[i];
-                    }
-                }
-            }
+        //Si he salido del bucle quedan sensores pero todos los centros están llenos
+        //Ahora j serán los sensores ya conectados
+        j = 0;
+        while (true) {
+            if (i == ssize) return;
+            adjs.put(i,new Edge(i,j,'s'));
+            ++Scons[j];
+            if (Scons[j] == 3) ++j;
+            ++i;
         }
     }
 
     //Operadores:
-    // - cambiar nodo destino //hacerlo entre 2 aristas
- //- cambiar nodo origen //hacerlo entre 2 aristas
- //- añadir conexión
- //- eliminar conexión
-
-
-    public boolean ableErase() {
-        return !adjs.isEmpty(); //si fuesen nulls iria igual bien
+    
+    //Cambiar 2 aristas
+    private boolean ableSwitchEdges() {
+        return true;
     }
 
-    public void eraseEdge() {
-        Random r = new Random();
-        int i = r.nextInt(ssize);
-
-        // Find a non-empty node
-        while (!adjs.containsKey(i)) {
-            i = r.nextInt(ssize);
-        }
-
-        Edge selectedEdge = adjs.get(i);
-        // Eliminar la arista del mapa
-        adjs.remove(i);
-
-        // Actualizar los contadores de conexiones
-        char t = selectedEdge.getTipo();
-        int id = selectedEdge.getId2();
-
-        if (t == 's') --Scons[id];
-        else --Ccons[id];
+    public void switchEdges(int id1, int id2) {
+        Edge a = adjs.get(id1);
+        Edge b = adjs.get(id2);
+        a.setId1(id2);
+        b.setId1(id1);
+        adjs.put(id1,b);
+        adjs.put(id2,a);
     }
 
-
-    //considerando max edges = ssize
-    public boolean ableAdd() {
-        return adjs.size() < ssize;
-        /*
-         for (int i = 0; i < ssize; ++i) {
-            if (!adjs.containsKey(i) || adjs.get(i) == null) {
-                return true;
-            }
-        }
-        return false;
-         */
-    }
-
-    public void addEdge() {
-        Random r = new Random();
-        int i = r.nextInt(ssize);
-        while (adjs.containsKey(i)) {
-            i = r.nextInt(ssize);
-        }
-        // Como sabemos que podemos añadir una, intentamos con certeza en todos los nodos
-        for (int j = 0; j < csize; ++j) {
-            if (Ccons[j] < 25) {
-                adjs.put(i, new Edge(i, j, 'c'));
-                return;
-            }
-        }
-
-        for (int j = 0; j < ssize; ++j) {
-            if (Scons[j] < 3) {
-                adjs.put(i, new Edge(i, j, 's'));
-                return;
-            }
-        }
-    }
-
-
-    public boolean ableSwitchOrigin() {
-        if (adjs.isEmpty()) return false;
-        boolean hueco = false;
-        boolean arista = false;
-        for (int i = 0; i < ssize; ++i) {
-            if (!hueco && adjs.get(i) == null) {
-                if (arista) return true;
-                else hueco = true;
-            }
-            if (!arista && adjs.get(i) != null) {
-                if (hueco) return true;
-                else arista = true;
-            }
-        }
+    //Cambiar el nodo apuntado por una arista
+    private boolean ableSwitchDestination(int id) {
+        int id2 = adjs.get(id).getId2();
+        for (int i = 0; i < ssize; ++i) if (i != id && i != id2 && Scons[i] < 3) return true;
+        for (int i = 0; i < csize; ++i) if (i != id && i != id2 Ccons[i] < 25) return true;
         return false;
     }
 
-    //en este caso no hace falta hacer erase y luego add, asi es mas eficiente
-    public void switchOrigin() {
+    public void SwitchDestination(int id) {
+        //Deberíamos haberlo hablado pero así por intuición hago de hacer el switch a un nuevo nodo random
+        //Piensa que quizá es demasiado hacer para todas las aristas probar a conectarlas a todos los otros posibles nodos
+        //Es mi opiniónlo podemos discutir
+        int id2 = adjs.get(id).getId2();
+        char tipo = adjs.get(id).getTipo();
         Random r = new Random();
-        int i = r.nextInt(ssize);
-        int j = i;
-        boolean foundi = false;
-        boolean foundj = false;
-        while (!foundi && !foundj) {
-            if (!foundi && adjs.get(i) == null) foundi = true;
-            else if (!foundi) i = r.nextInt(ssize);
-            if (!foundj && adjs.get(j) != null) foundj = true;
-            else if (!foundj) j = r.nextInt(ssize);
-        }
-        Edge aux = new Edge(i,adjs.get(j).getId2,adjs.get(j).getTipo);
-        adjs.put(i,aux);
-        adjs.put(j,null);
-    }
-
-
-    private boolean ableSwitchDestination() {
-        if (adjs.isEmpty()) return false;
-        //Hay que mirar todo y ver si hay al menos 2 nodos con huecos!
-        //Porque si hay solo una cabe la posibilidad de que me toque hacer switch destination de esa misma y entonces sería como no hacer nada
-        int count = 0;
-        for (int i = 0; i < csize; ++i) {
-            if (Ccons[i] < 25) ++count;
-            if (count == 2) return true;
-        }
-        for (int i = 0; i < ssize; ++i) {
-            if (Scons[i] < 3) ++count;
-            if (count == 2) return true;
-        }
-        return false;
-    }
-
-    public void switchDestination() {
-        Random r = new Random();
-        int i = r.nextInt(ssize);
-        int j = i;
-        boolean foundi = false;
-        boolean foundj = false;
+        int i = r.nextInt(2);
+        int[] cons;
         char t;
-        while (!foundi && !foundj) {
-            if (!foundi && adjs.get(i) != null) foundi = true;
-            else if (!foundi) i = r.nextInt(ssize);
-            if (!foundj) {
-                if (Ccons[j] < 25) {foundj = true; t = 'c';}
-                else if (Scons[j] < 3) {foundj = true; t = 's';}
+        int lim;
+        if (i == 0) {cons = Ccons; t = 'c'; lim = 25;}
+        else {cons = Scons; t = 's'; lim = 3;}
+        int sz = cons.size();
+        i = r.nextInt(sz);
+        while (true) {
+            if (((tipo != t) || (i != id && i != id2)) && cons[i] < lim) {
+                adjs.put(id,new Edge(id,i,t));
+                return;
             }
-            else if (!foundj) j = r.nextInt(ssize);
+            i = r.nextInt(sz);
         }
-        Edge aux = new Edge(i,j,t);
-        adjs.put(i,aux);
     }
+
 }

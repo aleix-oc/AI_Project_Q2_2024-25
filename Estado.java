@@ -6,25 +6,21 @@ public class Estado {
         representacion=g;
     }
     private void simpleSolution() {
-
+        representacion.simpleSolution();
     }
 
     private void complexSol() {
 
     }
 
-    /// OPERATORS
-    public boolean ableErase() {return representacion.ableErase();}
-
-    //public??
-    public void eraseEdge() {
-        if (ableErase()) representacion.eraseEdge();
+    public void switchEdges() {
+        int sz = representacion.getSsize();
+        for (int id1 = 0; id1 < sz; ++id1) for (int id2 = 0; id2 < sz; ++id2) if (id1 != id2) representacion.switchEdges(id1,id2);
     }
 
-    public boolean ableAdd() {return representacion.ableAdd();}
-
-    public void addEdge() {
-        if (ableAdd()) representacion.addEdge();
+    public void SwitchDestination() {
+        int sz = representacion.getSsize();
+        for (int id = 0; id < sz; ++id) if (ableSwitchDestination(id)) representacion.SwitchDestination(id);
     }
 
     public int heuristica() {} //habrá que implementar funciones privadas de calculo de coste y datos aunque sea en grafo.
