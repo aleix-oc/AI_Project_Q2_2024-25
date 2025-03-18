@@ -18,9 +18,13 @@ public class Estado {
         for (int id1 = 0; id1 < sz; ++id1) for (int id2 = 0; id2 < sz; ++id2) if (id1 != id2) representacion.switchEdges(id1,id2);
     }
 
-    public void SwitchDestination() {
-        int sz = representacion.getSsize();
-        for (int id = 0; id < sz; ++id) if (ableSwitchDestination(id)) representacion.SwitchDestination(id);
+    public void switchDestination() {
+        int ss = representacion.getSsize();
+        int cs = representacion.getCsize();
+        for (int id1 = 0; id1 < ss; ++id1) {
+            for (int id2 = 0; id2 < ss; ++id2) if (representacion.ableSwitch(id1,id2,'s')) representacion.SwitchDestination(id1,id2,'s');
+            for (int id2 = 0; id2 < cs; ++id2) if (representacion.ableSwitch(id1,id2,'c')) representacion.SwitchDestination(id1,id2,'c');
+        }
     }
 
     public int heuristica() {} //habrá que implementar funciones privadas de calculo de coste y datos aunque sea en grafo.

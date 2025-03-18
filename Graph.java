@@ -26,9 +26,8 @@ public class Graph {
     public void simpleSolution() {
         int i = 0;//Sensor
         int j = 0;//Centro
-        while (true) {
+        while (j < csize) {
             if (i == ssize) return;//Hemos puesto todos los sensores
-            if (j == csize) break;
             adjs.put(i,new Edge(i,j,'c'));
             ++Ccons[j];
             if (Ccons[j] == 25) ++j;
@@ -37,8 +36,7 @@ public class Graph {
         //Si he salido del bucle quedan sensores pero todos los centros están llenos
         //Ahora j serán los sensores ya conectados
         j = 0;
-        while (true) {
-            if (i == ssize) return;
+        while (i < ssize) {
             adjs.put(i,new Edge(i,j,'s'));
             ++Scons[j];
             if (Scons[j] == 3) ++j;
@@ -49,10 +47,6 @@ public class Graph {
     //Operadores:
     
     //Cambiar 2 aristas
-    private boolean ableSwitchEdges() {
-        return true;
-    }
-
     public void switchEdges(int id1, int id2) {
         Edge a = adjs.get(id1);
         Edge b = adjs.get(id2);
@@ -62,36 +56,26 @@ public class Graph {
         adjs.put(id2,a);
     }
 
-    //Cambiar el nodo apuntado por una arista
-    private boolean ableSwitchDestination(int id) {
-        int id2 = adjs.get(id).getId2();
-        for (int i = 0; i < ssize; ++i) if (i != id && i != id2 && Scons[i] < 3) return true;
-        for (int i = 0; i < csize; ++i) if (i != id && i != id2 Ccons[i] < 25) return true;
-        return false;
+    //id1: Nodo cuyo destino queremos cambiar
+    //d: Posible nuevo destino
+    public boolean ableSwitch(int id1, int d, char tipo) {
+        int[] cons;
+        int lim;
+        if (tipo == 'c') {cons = Ccons; lim = 25;}
+        else {cons = Scons; lim = 3;}
+        int id2 = adjs.get(id1).getId2();
+        char t = adjs.get(id1).getTipo();
+        if (cons[d] < lim) {
+            if (t == 's' && tipo == 's') return d != id && d != id2;
+            else if (t == 'c' && tipo == 's') return d != id;
+            else if (t == 'c' && tipo == 'c') return d != id2;
+            else return true;
+        }
+        else return false;
     }
 
-    public void SwitchDestination(int id) {
-        //Deberíamos haberlo hablado pero así por intuición hago de hacer el switch a un nuevo nodo random
-        //Piensa que quizá es demasiado hacer para todas las aristas probar a conectarlas a todos los otros posibles nodos
-        //Es mi opiniónlo podemos discutir
-        int id2 = adjs.get(id).getId2();
-        char tipo = adjs.get(id).getTipo();
-        Random r = new Random();
-        int i = r.nextInt(2);
-        int[] cons;
-        char t;
-        int lim;
-        if (i == 0) {cons = Ccons; t = 'c'; lim = 25;}
-        else {cons = Scons; t = 's'; lim = 3;}
-        int sz = cons.size();
-        i = r.nextInt(sz);
-        while (true) {
-            if (((tipo != t) || (i != id && i != id2)) && cons[i] < lim) {
-                adjs.put(id,new Edge(id,i,t));
-                return;
-            }
-            i = r.nextInt(sz);
-        }
+    public void SwitchDestination(int id1, int id2, char t) {
+        adjs.put(id1,new Edge(id1,id2,t));
     }
 
 }
