@@ -1,6 +1,8 @@
 import IA.Red.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.TreeSet;
+import java.util.Comparator;
 import static java.lang.Math.min;
 
 //𓃵 MESSI
@@ -46,40 +48,43 @@ public class Graph {
 
 
     public void complexSolution(){
-        PriorityQueue<Edge> pq = new PriorityQueue<>(Comparator
+        // Usamos TreeSet con un Comparator similar al que usabas para PriorityQueue
+        TreeSet<Edge> treeSet = new TreeSet<>(Comparator
                 .comparingInt((Edge edge) -> snodes.get(edge.getId1()).getCapacidad()).reversed()  // Orden por capacidad decreciente
                 .thenComparingDouble(Edge::getDistancia));  // Si hay empate, orden por distancia creciente
 
         // Calcular las distancias entre cada par de puntos
         for (int i = 0; i < csize; i++) {
             for (int j = 0; j < ssize; j++) {
-                pq.offer(new Edge(j,i,'c',calcularDistancia(Cnodes.get(i), Snodes.get(j))));
+                treeSet.add(new Edge(j, i, 'c', calcularDistancia(Cnodes.get(i), Snodes.get(j))));
             }
         }
-        while(!pq.isEmpty() && adjs.size()<ssize){
-            Edge selected = pq.poll();
+
+        while (!treeSet.isEmpty() && adjs.size() < ssize) {
+            Edge selected = treeSet.pollFirst(); // Obtiene el primer (más prioritario) elemento
             int id1 = selected.getId1();
             int id2 = selected.getId2();
             char t = selected.getTipo();
             double d = selected.getDistancia();
-            if(!adjs.containsKey(id1)) {
-                if(t=='c'){
-                    if(Ccons[id2]<25){
+
+            if (!adjs.containsKey(id1)) {
+                if (t == 'c') {
+                    if (Ccons[id2] < 25) {
                         adjs.put(id1, new Edge(id1, id2, t));
-                        for(int j = 0; j<ssize; ++j){
-                            if(id1!=j){
-                            pq.offer(new Edge(j,id1,'s',d+calcularDistancia(Snodes.get(i), Snodes.get(j))));
+                        for (int j = 0; j < ssize; ++j) {
+                            if (id1 != j) {
+                                // Al agregar al TreeSet, se asegura de que no se añadan duplicados
+                                treeSet.add(new Edge(j, id1, 's', d + calcularDistancia(Snodes.get(i), Snodes.get(j))));
+                            }
                         }
                     }
-
-                }
-            }
-                else{
-                    if(Scons[id2]<3){
+                } else {
+                    if (Scons[id2] < 3) {
                         adjs.put(id1, new Edge(id1, id2, t));
-                        for(int j = 0; j<ssize; ++j){
-                            if(id1!=j) {
-                                pq.offer(new Edge(j, id1, 's', d+calcularDistancia(Snodes.get(i), Snodes.get(j))));
+                        for (int j = 0; j < ssize; ++j) {
+                            if (id1 != j) {
+                                // Al agregar al TreeSet, se asegura de que no se añadan duplicados
+                                treeSet.add(new Edge(j, id1, 's', d + calcularDistancia(Snodes.get(i), Snodes.get(j))));
                             }
                         }
                     }
@@ -131,8 +136,8 @@ public class Graph {
         int id2 = adjs.get(id1).getId2();
         char t = adjs.get(id1).getTipo();
         if (cons[d] < lim) {
-            if (t == 's' && tipo == 's') return d != id && d != id2;
-            else if (t == 'c' && tipo == 's') return d != id;
+            if (t == 's' && tipo == 's') return d != id1 && d != id2;
+            else if (t == 'c' && tipo == 's') return d != id1;
             else if (t == 'c' && tipo == 'c') return d != id2;
             else return true;
         }
@@ -141,6 +146,13 @@ public class Graph {
 
     public void SwitchDestination(int id1, int id2, char t) {
         adjs.put(id1,new Edge(id1,id2,t));
+    }
+
+    public int getSsize() {
+        return ssize;
+    }
+    public int getCsize() {
+        return csize;
     }
 
 }
