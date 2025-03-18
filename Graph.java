@@ -3,6 +3,8 @@ import IA.Red.*;
 import java.util.HashMap;
 import java.util.TreeSet;
 import java.util.Comparator;
+
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 //𓃵 MESSI
@@ -50,13 +52,13 @@ public class Graph {
     public void complexSolution(){
         // Usamos TreeSet con un Comparator similar al que usabas para PriorityQueue
         TreeSet<Edge> treeSet = new TreeSet<>(Comparator
-                .comparingInt((Edge edge) -> snodes.get(edge.getId1()).getCapacidad()).reversed()  // Orden por capacidad decreciente
+                .comparingDouble(Edge::getVolumenReal).reversed()  // Orden por volumen real decreciente
                 .thenComparingDouble(Edge::getDistancia));  // Si hay empate, orden por distancia creciente
 
         // Calcular las distancias entre cada par de puntos
         for (int i = 0; i < csize; i++) {
             for (int j = 0; j < ssize; j++) {
-                treeSet.add(new Edge(j, i, 'c', calcularDistancia(Cnodes.get(i), Snodes.get(j))));
+                treeSet.add(new Edge(j, i, 'c', calcularDistancia(Cnodes.get(i), Snodes.get(j)), Snodes.get(j).getCapacidad(), Snodes.get(j).getCapacidad() ));
             }
         }
 
@@ -66,25 +68,49 @@ public class Graph {
             int id2 = selected.getId2();
             char t = selected.getTipo();
             double d = selected.getDistancia();
+            int v1 = selected.getVolumenReal();
+            int v2 = selected.getVolumenFalso();
 
             if (!adjs.containsKey(id1)) {
                 if (t == 'c') {
                     if (Ccons[id2] < 25) {
-                        adjs.put(id1, new Edge(id1, id2, t));
+                        adjs.put(id1, new Edge(id1, id2, t, d, min(v1, 150-Calmacenamiento[id2]), v2));
+                        Calmacenamiento[id2] = max(150 , Calmacenamiento[id2] + v1);
                         for (int j = 0; j < ssize; ++j) {
                             if (id1 != j) {
                                 // Al agregar al TreeSet, se asegura de que no se añadan duplicados
-                                treeSet.add(new Edge(j, id1, 's', d + calcularDistancia(Snodes.get(i), Snodes.get(j))));
+                                treeSet.add(new Edge(j, id1, 's', d + calcularDistancia(Snodes.get(i), Snodes.get(j)),Snodes.get(j).getCapacidad(), Snodes.get(j).getCapacidad()));
                             }
                         }
                     }
                 } else {
-                    if (Scons[id2] < 3) {
-                        adjs.put(id1, new Edge(id1, id2, t));
+                    Edge previo = adjs.get(id2);
+                    int capacidadp = Snodes.get(id2).getCapacidad();
+                    int capacidada = Snodes.get(id1).getCapacidad();
+                    if (Scons[id2] < 3 && previo.getVolumenFalso()<3*capacidadp) {
+                        adjs.put(id1, new Edge(id1, id2, t, d, min(3*capacidadp, previo.getVolumenReal() + capacidada), v2));
+                        while(previo.getTipo() != 'c'){
+
+                            capacidadp = Snodes.get(selected.getId2()).getCapacidad();
+                            capacidada = Snodes.get(selected.getId1()).getCapacidad();
+                            int capacidadpp = Snodes.get(previo.getId2()).getCapacidad();
+                            previo.setVolumenFalso(min(3*capacidadp, previo.getVolumenFalso()+selected.getVolumenReal()));
+                            previo.setVolumenReal(min(previo.getVolumenReal()+selected.getVolumenReal(), 2*capacidadpp));
+                            selected = previo;
+                            previo = adjs.get(selected.getId2());
+                        }
+                        capacidada = Snodes.get(selected.getId1()).getCapacidad();
+                        capacidadp = Snodes.get(selected.getId2()).getCapacidad();
+                        int idc = previo.getId2();
+                        previo.setVolumenFalso(min(3*capacidadp, previo.getVolumenFalso()+selected.getVolumenReal()));
+                        previo.setVolumenReal(min(previo.getVolumenReal()+selected.getVolumenReal(),150-Calmacenamiento[idc]);
+
+
+
                         for (int j = 0; j < ssize; ++j) {
                             if (id1 != j) {
                                 // Al agregar al TreeSet, se asegura de que no se añadan duplicados
-                                treeSet.add(new Edge(j, id1, 's', d + calcularDistancia(Snodes.get(i), Snodes.get(j))));
+                                treeSet.add(new Edge(j, id1, 's', d + calcularDistancia(Snodes.get(i), Snodes.get(j), Snodes.get(j).getCapacidad(), Snodes.get(j).getCapacidad())));
                             }
                         }
                     }
