@@ -1,7 +1,7 @@
 import java.util.Objects;
 
 public class Edge {
-    private int weight;
+    private double distancia;
     private int id1;
     private int id2;
     private char tipo;
@@ -13,6 +13,13 @@ public class Edge {
         this.tipo = t;
     }
 
+    public Edge(int i1, int i2, char t, double d){
+        this.id1 = i1;
+        this.id2 = i2;
+        this.tipo = t;
+        this.distancia = d;
+    }
+
     // Getters
     public int getId1() {
         return id1;
@@ -22,31 +29,15 @@ public class Edge {
         return id2;
     }
 
-    public int getWeight() {
-        return weight;
-    }
-
     public char getTipo() {
         return tipo;
     }
 
+    public double getDistancia() { return distancia; }
+
     // Setter
-    public void setWeight(int w) {
-        this.weight = w;
-    }
+    public void setId1(int id1) { this.id1=id1; }
+    public void setId2(int id2) { this.id2=id2; }
+    public void setDistancia(double d) { this.distancia=d; }
 
-    // Implementación de equals()
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true; // Son el mismo objeto en memoria
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Edge edge = (Edge) obj;
-        return id1 == edge.id1 && id2 == edge.id2 && tipo == edge.tipo;
-    }
-
-    // Implementación de hashCode()
-    @Override
-    public int hashCode() {
-        return Objects.hash(id1, id2, tipo);
-    }
 }

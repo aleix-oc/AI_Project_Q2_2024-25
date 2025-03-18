@@ -23,6 +23,71 @@ public class Graph {
         adjs = new HashMap<>();
     }
 
+    public static double calcularDistancia(int x1, int y1, int x2, int y2) {
+        int diferenciaX = x2 - x1;
+        int diferenciaY = y2 - y1;
+        return Math.sqrt(Math.pow(diferenciaX, 2) + Math.pow(diferenciaY, 2));
+    }
+
+    public static double calcularDistancia(Centro a, Sensor b){
+        int x1 = a.getCoordX();
+        int y1 = a.getCoordY();
+        int x2 = b.getCoordX();
+        int y2 = b.getCoordY();
+        return calcularDistancia(x1, y1, x2, y2);
+    }
+    public static double calcularDistancia(Sensor a, Sensor b){
+        int x1 = a.getCoordX();
+        int y1 = a.getCoordY();
+        int x2 = b.getCoordX();
+        int y2 = b.getCoordY();
+        return calcularDistancia(x1, y1, x2, y2);
+    }
+
+
+    public void complexSolution(){
+        PriorityQueue<Edge> pq = new PriorityQueue<>(Comparator
+                .comparingInt((Edge edge) -> snodes.get(edge.getId1()).getCapacidad()).reversed()  // Orden por capacidad decreciente
+                .thenComparingDouble(Edge::getDistancia));  // Si hay empate, orden por distancia creciente
+
+        // Calcular las distancias entre cada par de puntos
+        for (int i = 0; i < csize; i++) {
+            for (int j = 0; j < ssize; j++) {
+                pq.offer(new Edge(j,i,'c',calcularDistancia(Cnodes.get(i), Snodes.get(j))));
+            }
+        }
+        while(!pq.isEmpty() && adjs.size()<ssize){
+            Edge selected = pq.poll();
+            int id1 = selected.getId1();
+            int id2 = selected.getId2();
+            char t = selected.getTipo();
+            double d = selected.getDistancia();
+            if(!adjs.containsKey(id1)) {
+                if(t=='c'){
+                    if(Ccons[id2]<25){
+                        adjs.put(id1, new Edge(id1, id2, t));
+                        for(int j = 0; j<ssize; ++j){
+                            if(id1!=j){
+                            pq.offer(new Edge(j,id1,'s',d+calcularDistancia(Snodes.get(i), Snodes.get(j))));
+                        }
+                    }
+
+                }
+            }
+                else{
+                    if(Scons[id2]<3){
+                        adjs.put(id1, new Edge(id1, id2, t));
+                        for(int j = 0; j<ssize; ++j){
+                            if(id1!=j) {
+                                pq.offer(new Edge(j, id1, 's', d+calcularDistancia(Snodes.get(i), Snodes.get(j))));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public void simpleSolution() {
         int i = 0;//Sensor
         int j = 0;//Centro
