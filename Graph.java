@@ -162,6 +162,16 @@ public class Graph {
         }
     }
 
+    //Sacar coste
+
+    public int getCost() {
+        int cost = 0;
+        for (int i = 0; i < ssize; ++i) {
+            cost += Math.pow(adjs.get(i).getDistancia(),2)+adjs.get(i).getVolumenFalso();
+        }
+        return cost;
+    }
+
     //Operadores:
     
     //Cambiar 2 aristas
