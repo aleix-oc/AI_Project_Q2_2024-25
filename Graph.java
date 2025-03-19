@@ -92,22 +92,10 @@ public class Graph {
                     int capacidadp = Snodes.get(id2).getCapacidad();
                     int capacidada = Snodes.get(id1).getCapacidad();
                     if (Scons[id2] < 3 && previo.getVolumenFalso()<3*capacidadp) {
-                        adjs.put(id1, new Edge(id1, id2, t, d, min(3*capacidadp, previo.getVolumenReal() + capacidada), v2));
-                        while(previo.getTipo() != 'c'){
-
-                            capacidadp = Snodes.get(selected.getId2()).getCapacidad();
-                            int capacidadpp = Snodes.get(previo.getId2()).getCapacidad();
-                            previo.setVolumenFalso(min(3*capacidadp, previo.getVolumenFalso()+selected.getVolumenReal()));
-                            previo.setVolumenReal(min(previo.getVolumenReal()+selected.getVolumenReal(), 2*capacidadpp));
-                            selected = previo;
-                            previo = adjs.get(selected.getId2());
-                        }
-                        capacidadp = Snodes.get(selected.getId2()).getCapacidad();
-                        int idc = previo.getId2();
-                        previo.setVolumenFalso(min(3*capacidadp, previo.getVolumenFalso()+selected.getVolumenReal()));
-                        previo.setVolumenReal(min(previo.getVolumenReal()+selected.getVolumenReal(),150-Calmacenamiento[idc]));
-                        Calmacenamiento[id2] = min(150 , Calmacenamiento[id2] + previo.getVolumenReal());
-
+                        Edge next = new Edge(id1, id2, t, d, min(3*capacidadp, previo.getVolumenReal() + capacidada), v2);
+                        ++Scons[id2];
+                        adjs.put(id1, next);
+                        enfonsarVolumen(next);
 
                         for (int j = 0; j < ssize; ++j) {
                             if (!adjs.containsKey(j)) {
@@ -121,6 +109,30 @@ public class Graph {
         }
     }
 
+    public void enfonsarVolumen(Edge selected){
+
+        int id1 = selected.getId1();
+        int id2 = selected.getId2();
+
+        Edge previo = adjs.get(id2);
+        int capacidadp = Snodes.get(id2).getCapacidad();
+        while(previo.getTipo() != 'c'){
+
+            capacidadp = Snodes.get(selected.getId2()).getCapacidad();
+            int capacidadpp = Snodes.get(previo.getId2()).getCapacidad();
+            previo.setVolumenFalso(min(3*capacidadp, previo.getVolumenFalso()+selected.getVolumenReal()));
+            previo.setVolumenReal(min(previo.getVolumenReal()+selected.getVolumenReal(), 2*capacidadpp));
+            selected = previo;
+            previo = adjs.get(selected.getId2());
+        }
+        capacidadp = Snodes.get(selected.getId2()).getCapacidad();
+        int idc = previo.getId2();
+        previo.setVolumenFalso(min(3*capacidadp, previo.getVolumenFalso()+selected.getVolumenReal()));
+        previo.setVolumenReal(min(previo.getVolumenReal()+selected.getVolumenReal(),150-Calmacenamiento[idc]));
+        Calmacenamiento[id2] = min(150 , Calmacenamiento[id2] + previo.getVolumenReal());
+
+    }
+
     public void simpleSolution() {
         int i = 0;//Sensor
         int j = 0;//Centro
@@ -130,14 +142,16 @@ public class Graph {
             adjs.put(i,new Edge(i,j,'c', calcularDistancia(Cnodes.get(j),s ,min(s.getCapacidad(), 150-Calmacenamiento[j]), s.getCapacidad() ) ) );
             Calmacenamiento[j] = min(150 , Calmacenamiento[j] + s.getCapacidad());
             ++Ccons[j];
-            if (Ccons[j] == 25 || Calmacenamiento[j] == 150) ++j;
+            if (Ccons[j] == 25) ++j;
             ++i;
         }
         //Si he salido del bucle quedan sensores pero todos los centros están llenos
         //Ahora j serán los sensores ya conectados
         j = 0;
         while (i < ssize) {
-            adjs.put(i,new Edge(i,j,'s'));
+            Edge next = new Edge(i,j,'s')
+            adjs.put(i, next);
+            enfonsarVolumen(next);
             ++Scons[j];
             if (Scons[j] == 3) ++j;
             ++i;
