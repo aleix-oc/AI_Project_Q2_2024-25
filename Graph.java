@@ -62,7 +62,7 @@ public class Graph {
         // Calcular las distancias entre cada par de puntos
         for (int i = 0; i < csize; i++) {
             for (int j = 0; j < ssize; j++) {
-                treeSet.add(new Edge(j, i, 'c', calcularDistancia(Cnodes.get(i), Snodes.get(j)), Snodes.get(j).getCapacidad(), Snodes.get(j).getCapacidad() ));
+                treeSet.add(new Edge(j, i, 'c', calcularDistancia(Cnodes.get(i), Snodes.get(j)), (int)Snodes.get(j).getCapacidad(), (int)Snodes.get(j).getCapacidad() ));
             }
         }
 
@@ -84,14 +84,14 @@ public class Graph {
                         for (int j = 0; j < ssize; ++j) {
                             if (!adjs.containsKey(j)) {
                                 // Al agregar al TreeSet, se asegura de que no se añadan duplicados
-                                treeSet.add(new Edge(j, id1, 's', d + calcularDistancia(Snodes.get(i), Snodes.get(j)),Snodes.get(j).getCapacidad(), Snodes.get(j).getCapacidad()));
+                                treeSet.add(new Edge(j, id1, 's', d + calcularDistancia(Snodes.get(id1), Snodes.get(j)), (int)Snodes.get(j).getCapacidad(), (int)Snodes.get(j).getCapacidad()));
                             }
                         }
                     }
                 } else {
                     Edge previo = adjs.get(id2);
-                    int capacidadp = Snodes.get(id2).getCapacidad();
-                    int capacidada = Snodes.get(id1).getCapacidad();
+                    int capacidadp = (int)Snodes.get(id2).getCapacidad();
+                    int capacidada = (int)Snodes.get(id1).getCapacidad();
                     if (Scons[id2] < 3 && previo.getVolumenFalso()<3*capacidadp) {
                         Edge next = new Edge(id1, id2, t, d, min(3*capacidadp, previo.getVolumenReal() + capacidada), v2);
                         ++Scons[id2];
@@ -101,7 +101,7 @@ public class Graph {
                         for (int j = 0; j < ssize; ++j) {
                             if (!adjs.containsKey(j)) {
                                 // Al agregar al TreeSet, se asegura de que no se añadan duplicados
-                                treeSet.add(new Edge(j, id1, 's', d + calcularDistancia(Snodes.get(i), Snodes.get(j), Snodes.get(j).getCapacidad(), Snodes.get(j).getCapacidad())));
+                                treeSet.add(new Edge(j, id1, 's', d + calcularDistancia(Snodes.get(id1), Snodes.get(j)), (int)Snodes.get(j).getCapacidad(), (int)Snodes.get(j).getCapacidad()));
                             }
                         }
                     }
@@ -112,7 +112,7 @@ public class Graph {
         for(int i=0; i<ssize ; ++i){
             Edge selected = adjs.get(i);
             if(selected.getTipo()=='c'){
-                selected.setDistancia(calcularDistancia(Snodes.get(selected.getId1()), Cnodes.get(selected.getId2())));
+                selected.setDistancia(calcularDistancia(Cnodes.get(selected.getId2()), Snodes.get(selected.getId1())));
             }
             else {
                 selected.setDistancia(calcularDistancia(Snodes.get(selected.getId1()), Snodes.get(selected.getId2())));
@@ -126,18 +126,18 @@ public class Graph {
         int id2 = selected.getId2();
 
         Edge previo = adjs.get(id2);
-        int capacidadp = Snodes.get(id2).getCapacidad();
+        int capacidadp = (int)Snodes.get(id2).getCapacidad();
         while(previo.getTipo() != 'c' || previo.getVolumenFalso()<3*capacidadp){
 
-            capacidadp = Snodes.get(selected.getId2()).getCapacidad();
-            int capacidadpp = Snodes.get(previo.getId2()).getCapacidad();
+            capacidadp = (int)Snodes.get(selected.getId2()).getCapacidad();
+            int capacidadpp = (int)Snodes.get(previo.getId2()).getCapacidad();
             previo.setVolumenFalso(min(3*capacidadp, previo.getVolumenFalso()+selected.getVolumenReal()));
             previo.setVolumenReal(min(previo.getVolumenReal()+selected.getVolumenReal(), 2*capacidadpp));
             selected = previo;
             previo = adjs.get(selected.getId2());
         }
         if(previo.getTipo() == 'c') {
-            capacidadp = Snodes.get(selected.getId2()).getCapacidad();
+            capacidadp = (int)Snodes.get(selected.getId2()).getCapacidad();
             int idc = previo.getId2();
             previo.setVolumenFalso(min(3 * capacidadp, previo.getVolumenFalso() + selected.getVolumenReal()));
             previo.setVolumenReal(min(previo.getVolumenReal() + selected.getVolumenReal(), 150 - Calmacenamiento[idc]));
@@ -152,8 +152,8 @@ public class Graph {
         while (j < csize) {
             if (i == ssize) return;//Hemos puesto todos los sensores
             Sensor s = Snodes.get(i);
-            adjs.put(i,new Edge(i,j,'c', calcularDistancia(Cnodes.get(j),s ,min(s.getCapacidad(), 150-Calmacenamiento[j]), s.getCapacidad() ) ) );
-            Calmacenamiento[j] = min(150 , Calmacenamiento[j] + s.getCapacidad());
+            adjs.put(i,new Edge(i,j,'c', calcularDistancia(Cnodes.get(j),s ),min((int)s.getCapacidad(), 150-Calmacenamiento[j]), (int)s.getCapacidad() ) );
+            Calmacenamiento[j] = min(150 , Calmacenamiento[j] + (int)s.getCapacidad());
             ++Ccons[j];
             if (Ccons[j] == 25) ++j;
             ++i;
@@ -166,7 +166,7 @@ public class Graph {
             Sensor s2 = Snodes.get(j);
             double d = adjs.get(j).getDistancia();
             int vr = adjs.get(j).getVolumenReal();
-            Edge next = new Edge(i,j,'s', d + calcularDistancia(s1, s2), min(3*s2.getCapacidad(), vr + s1.getCapacidad()), s1.getCapacidad());
+            Edge next = new Edge(i,j,'s', d + calcularDistancia(s1, s2), min(3*(int)s2.getCapacidad(), vr + (int)s1.getCapacidad()), (int)s1.getCapacidad());
             adjs.put(i, next);
             enfonsarVolumen(next);
             ++Scons[j];
@@ -177,12 +177,22 @@ public class Graph {
 
     //Sacar coste
 
-    public int getCost() {
-        int cost = 0;
+    public double getCoste() {
+        double coste = 0;
         for (int i = 0; i < ssize; ++i) {
-            cost += Math.pow(adjs.get(i).getDistancia(),2)+adjs.get(i).getVolumenFalso();
+            coste += adjs.get(i).getDistancia()*adjs.get(i).getDistancia()+adjs.get(i).getVolumenFalso();
         }
-        return cost;
+        return coste;
+    }
+
+    public int getVolumen(){
+        int volumen = 0;
+        for (int i = 0; i < ssize; ++i) {
+            if(adjs.get(i).getTipo() == 'c'){
+                volumen += adjs.get(i).getVolumenReal();
+            }
+        }
+        return volumen;
     }
 
     //Operadores:
