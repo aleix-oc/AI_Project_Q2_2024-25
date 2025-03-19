@@ -11,10 +11,12 @@ import static java.lang.Math.min;
 public class Graph {
     private int[] Scons;
     private int[] Ccons;
+    private int[] Calmacenamiento;
     private int ssize;
     private int csize;
     private static Sensores Snodes;
     private static CentrosDatos Cnodes;
+
     private HashMap<Integer, Edge> adjs;
 
     public Graph(Sensores s, CentrosDatos c) {
@@ -24,6 +26,7 @@ public class Graph {
         csize = Cnodes.size();
         Scons = new int[ssize];
         Ccons = new int[csize];
+        Calmacenamiento = new int[csize];
         adjs = new HashMap<>();
     }
 
@@ -50,7 +53,9 @@ public class Graph {
 
 
     public void complexSolution(){
-        // Usamos TreeSet con un Comparator similar al que usabas para PriorityQueue
+        // Usamos TreeSet con un Comparator similar al que usabamos para PriorityQueue
+        boolean[] visitado = new boolean[ssize];
+
         TreeSet<Edge> treeSet = new TreeSet<>(Comparator
                 .comparingDouble(Edge::getVolumenReal).reversed()  // Orden por volumen real decreciente
                 .thenComparingDouble(Edge::getDistancia));  // Si hay empate, orden por distancia creciente
@@ -75,9 +80,10 @@ public class Graph {
                 if (t == 'c') {
                     if (Ccons[id2] < 25) {
                         adjs.put(id1, new Edge(id1, id2, t, d, min(v1, 150-Calmacenamiento[id2]), v2));
-                        Calmacenamiento[id2] = max(150 , Calmacenamiento[id2] + v1);
+                        visitado[id1] = true;
+                        Calmacenamiento[id2] = min(150 , Calmacenamiento[id2] + v1);
                         for (int j = 0; j < ssize; ++j) {
-                            if (id1 != j) {
+                            if (!visitado[j]) {
                                 // Al agregar al TreeSet, se asegura de que no se añadan duplicados
                                 treeSet.add(new Edge(j, id1, 's', d + calcularDistancia(Snodes.get(i), Snodes.get(j)),Snodes.get(j).getCapacidad(), Snodes.get(j).getCapacidad()));
                             }
@@ -89,26 +95,25 @@ public class Graph {
                     int capacidada = Snodes.get(id1).getCapacidad();
                     if (Scons[id2] < 3 && previo.getVolumenFalso()<3*capacidadp) {
                         adjs.put(id1, new Edge(id1, id2, t, d, min(3*capacidadp, previo.getVolumenReal() + capacidada), v2));
+                        visitado[id1] = true;
                         while(previo.getTipo() != 'c'){
 
                             capacidadp = Snodes.get(selected.getId2()).getCapacidad();
-                            capacidada = Snodes.get(selected.getId1()).getCapacidad();
                             int capacidadpp = Snodes.get(previo.getId2()).getCapacidad();
                             previo.setVolumenFalso(min(3*capacidadp, previo.getVolumenFalso()+selected.getVolumenReal()));
                             previo.setVolumenReal(min(previo.getVolumenReal()+selected.getVolumenReal(), 2*capacidadpp));
                             selected = previo;
                             previo = adjs.get(selected.getId2());
                         }
-                        capacidada = Snodes.get(selected.getId1()).getCapacidad();
                         capacidadp = Snodes.get(selected.getId2()).getCapacidad();
                         int idc = previo.getId2();
                         previo.setVolumenFalso(min(3*capacidadp, previo.getVolumenFalso()+selected.getVolumenReal()));
-                        previo.setVolumenReal(min(previo.getVolumenReal()+selected.getVolumenReal(),150-Calmacenamiento[idc]);
-
+                        previo.setVolumenReal(min(previo.getVolumenReal()+selected.getVolumenReal(),150-Calmacenamiento[idc]));
+                        Calmacenamiento[id2] = min(150 , Calmacenamiento[id2] + previo.getVolumenReal());
 
 
                         for (int j = 0; j < ssize; ++j) {
-                            if (id1 != j) {
+                            if (!visitado[j]) {
                                 // Al agregar al TreeSet, se asegura de que no se añadan duplicados
                                 treeSet.add(new Edge(j, id1, 's', d + calcularDistancia(Snodes.get(i), Snodes.get(j), Snodes.get(j).getCapacidad(), Snodes.get(j).getCapacidad())));
                             }
