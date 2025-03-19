@@ -77,7 +77,7 @@ public class Graph {
 
             if (!adjs.containsKey(id1)) {
                 if (t == 'c') {
-                    if (Ccons[id2] < 25) {
+                    if (Ccons[id2] < 25 && Calmacenamiento[id2] < 150) {
                         adjs.put(id1, new Edge(id1, id2, t, d, min(v1, 150-Calmacenamiento[id2]), v2));
                         Calmacenamiento[id2] = min(150 , Calmacenamiento[id2] + v1);
                         for (int j = 0; j < ssize; ++j) {
@@ -126,9 +126,11 @@ public class Graph {
         int j = 0;//Centro
         while (j < csize) {
             if (i == ssize) return;//Hemos puesto todos los sensores
-            adjs.put(i,new Edge(i,j,'c'));
+            Sensor s = Snodes.get(i);
+            adjs.put(i,new Edge(i,j,'c', calcularDistancia(Cnodes.get(j),s ,min(s.getCapacidad(), 150-Calmacenamiento[j]), s.getCapacidad() ) ) );
+            Calmacenamiento[j] = min(150 , Calmacenamiento[j] + s.getCapacidad());
             ++Ccons[j];
-            if (Ccons[j] == 25) ++j;
+            if (Ccons[j] == 25 || Calmacenamiento[j] == 150) ++j;
             ++i;
         }
         //Si he salido del bucle quedan sensores pero todos los centros están llenos
