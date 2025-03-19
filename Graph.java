@@ -149,7 +149,11 @@ public class Graph {
         //Ahora j serán los sensores ya conectados
         j = 0;
         while (i < ssize) {
-            Edge next = new Edge(i,j,'s')
+            Sensor s1 = Snodes.get(i);
+            Sensor s2 = Snodes.get(j);
+            double d = adjs.get(j).getDistancia();
+            int vr = adjs.get(j).getVolumenReal();
+            Edge next = new Edge(i,j,'s', d + calcularDistancia(s1, s2), min(3*s2.getCapacidad(), vr + s1.getCapacidad()), s1.getCapacidad());
             adjs.put(i, next);
             enfonsarVolumen(next);
             ++Scons[j];
