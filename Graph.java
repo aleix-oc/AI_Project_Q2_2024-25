@@ -80,6 +80,7 @@ public class Graph {
                     if (Ccons[id2] < 25 && Calmacenamiento[id2] < 150) {
                         adjs.put(id1, new Edge(id1, id2, t, d, min(v1, 150-Calmacenamiento[id2]), v2));
                         Calmacenamiento[id2] = min(150 , Calmacenamiento[id2] + v1);
+                        ++Ccons[id2];
                         for (int j = 0; j < ssize; ++j) {
                             if (!adjs.containsKey(j)) {
                                 // Al agregar al TreeSet, se asegura de que no se añadan duplicados
@@ -107,6 +108,16 @@ public class Graph {
                 }
             }
         }
+
+        for(int i=0; i<ssize ; ++i){
+            Edge selected = adjs.get(i);
+            if(selected.getTipo()=='c'){
+                selected.setDistancia(calcularDistancia(Snodes.get(selected.getId1()), Cnodes.get(selected.getId2())));
+            }
+            else {
+                selected.setDistancia(calcularDistancia(Snodes.get(selected.getId1()), Snodes.get(selected.getId2())));
+            }
+        }
     }
 
     public void enfonsarVolumen(Edge selected){
@@ -116,7 +127,7 @@ public class Graph {
 
         Edge previo = adjs.get(id2);
         int capacidadp = Snodes.get(id2).getCapacidad();
-        while(previo.getTipo() != 'c'){
+        while(previo.getTipo() != 'c' || previo.getVolumenFalso()<3*capacidadp){
 
             capacidadp = Snodes.get(selected.getId2()).getCapacidad();
             int capacidadpp = Snodes.get(previo.getId2()).getCapacidad();
@@ -125,11 +136,13 @@ public class Graph {
             selected = previo;
             previo = adjs.get(selected.getId2());
         }
-        capacidadp = Snodes.get(selected.getId2()).getCapacidad();
-        int idc = previo.getId2();
-        previo.setVolumenFalso(min(3*capacidadp, previo.getVolumenFalso()+selected.getVolumenReal()));
-        previo.setVolumenReal(min(previo.getVolumenReal()+selected.getVolumenReal(),150-Calmacenamiento[idc]));
-        Calmacenamiento[id2] = min(150 , Calmacenamiento[id2] + previo.getVolumenReal());
+        if(previo.getTipo() == 'c') {
+            capacidadp = Snodes.get(selected.getId2()).getCapacidad();
+            int idc = previo.getId2();
+            previo.setVolumenFalso(min(3 * capacidadp, previo.getVolumenFalso() + selected.getVolumenReal()));
+            previo.setVolumenReal(min(previo.getVolumenReal() + selected.getVolumenReal(), 150 - Calmacenamiento[idc]));
+            Calmacenamiento[id2] = min(150, Calmacenamiento[id2] + previo.getVolumenReal());
+        }
 
     }
 
