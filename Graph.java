@@ -134,7 +134,7 @@ public class Graph {
             capacidadp = (int)Snodes.get(selected.getId2()).getCapacidad();
             int capacidadpp = (int)Snodes.get(previo.getId2()).getCapacidad();
             previo.setVolumenFalso(min(3*capacidadp, previo.getVolumenFalso()+selected.getVolumenReal()));
-            previo.setVolumenReal(min(previo.getVolumenReal()+selected.getVolumenReal(), 2*capacidadpp));
+            previo.setVolumenReal(min(previo.getVolumenReal()+selected.getVolumenReal(), 3*capacidadpp-adjs.get(previo.getId2()).getVolumenReal()));
             selected = previo;
             previo = adjs.get(selected.getId2());
         }
@@ -166,7 +166,7 @@ public class Graph {
             int idc = previo.getId2();
             int temp = previo.getVolumenReal();
             previo.setVolumenFalso(previo.getVolumenFalso()-selected.getVolumenReal());
-            previo.setVolumenReal(previo.getVolumenReal()-(selected.getVolumenReal()-(previo.getVolumenFalso()-previo.getVolumenReal())));
+            if(previo.getVolumenFalso() - previo.getVolumenReal() < selected.getVolumenReal()) previo.setVolumenReal(previo.getVolumenReal()-(selected.getVolumenReal()-(previo.getVolumenFalso()-previo.getVolumenReal())));
             Calmacenamiento[idc] = Calmacenamiento[idc] - (temp - previo.getVolumenReal());
         }
     }
@@ -191,7 +191,7 @@ public class Graph {
             Sensor s2 = Snodes.get(j);
             double d = adjs.get(j).getDistancia();
             int vr = adjs.get(j).getVolumenReal();
-            Edge next = new Edge(i,j,'s', d + calcularDistancia(s1, s2), min(3*(int)s2.getCapacidad(), vr + (int)s1.getCapacidad()), (int)s1.getCapacidad());
+            Edge next = new Edge(i,j,'s', calcularDistancia(s1, s2), min(3*(int)s2.getCapacidad(), vr + (int)s1.getCapacidad()), (int)s1.getCapacidad());
             adjs.put(i, next);
             enfonsarVolumen(next);
             ++Scons[j];
@@ -282,10 +282,32 @@ public class Graph {
         adjs.put(id1,new Edge(id1,id2,t));
         if (!topologicalSort()) return false;
         //Ahora restauramos estado original y quitamos y ponemos con enfonsar
-        adjs.remove(id1);//??
-        desenfonsarVolumen(backup);//??
+        adjs.remove(id1);
+        if(backup.getTipo() == 'c') {
+            int idc = backup.getId2();
+            int temp = backup.getVolumenReal();
+            Calmacenamiento[idc] = Calmacenamiento[idc] - (temp);
+            --Ccons[idc];
+        }
+        else{
+            desenfonsarVolumen(backup);
+            --Scons[backup.getId2()];
+        }
         adjs.put(id1, new Edge(id1,id2,t));
-        enfonsarVolumen(adjs.get(id1));
+        adjs.get(id1).setVolumenFalso(backup.getVolumenFalso());
+        if(t == 'c'){
+            adjs.get(id1).setDistancia(calcularDistancia(Cnodes.get(id2), Snodes.get(id1)));
+            adjs.get(id1).setVolumenReal(min(backup.getVolumenFalso(), 150-Calmacenamiento[id2]));
+            ++Ccons[id2];
+            Calmacenamiento[id2] = Calmacenamiento[id2] + adjs.get(id1).getVolumenReal();
+
+        }
+        else{
+            adjs.get(id1).setDistancia(calcularDistancia(Snodes.get(id1), Snodes.get(id2)));
+            adjs.get(id1).setVolumenReal(min(backup.getVolumenFalso(), 3*Snodes.get(id2).getCapacidad()-adjs.get(id2).getVolumenReal()));
+            ++Scons[id2];
+            enfonsarVolumen(adjs.get(id1));
+        }
         return true;
     }
 
