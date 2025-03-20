@@ -27,7 +27,9 @@ public class Estado {
         }
     }
 
-    public int heuristica() {} //habrá que implementar funciones privadas de calculo de coste y datos aunque sea en grafo.
+    public int heuristica() {
+        return (int) representacion.getCoste() - representacion.getVolumen();
+    } //habrá que implementar funciones privadas de calculo de coste y datos aunque sea en grafo.
 
 
 }

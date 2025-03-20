@@ -1,8 +1,8 @@
 
 import aima.search.framework.Successor;
-import aima.search.framewoek.SuccessorFunction;
+import aima.search.framework.SuccessorFunction;
 
-public class finderSuccessorFunction implements SuccessorFunction {
+public class simulatedAnnealingFinderSuccessorFunction implements SuccessorFunction {
     @SuppressWarnings("unchecked")
     public Graph getSuccesor (Object aState){}
 }

@@ -1,7 +1,7 @@
 
 import aima.search.framework.HeuristicFunction;
 
-public class heuristicFuntction implements  HeuristifFunction {
+public class heuristicFunction implements  HeuristicFunction {
     @Override
     public boolean equals(Object obj) {
         boolean retValue;
