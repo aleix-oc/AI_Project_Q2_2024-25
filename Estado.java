@@ -10,26 +10,21 @@ public class Estado {
     }
 
     private void complexSol() {
-
+        representacion.complexSol();
     }
 
-    public void switchEdges() {
-        int sz = representacion.getSsize();
-        for (int id1 = 0; id1 < sz; ++id1) for (int id2 = 0; id2 < sz; ++id2) if (id1 != id2) representacion.switchEdges(id1,id2);
-    }
+    public boolean switchEdges(int id1, int id2) { return representacion.switchEdges(id1, id2);}
 
-    public void switchDestination() {
-        int ss = representacion.getSsize();
-        int cs = representacion.getCsize();
-        for (int id1 = 0; id1 < ss; ++id1) {
-            for (int id2 = 0; id2 < ss; ++id2) if (representacion.ableSwitch(id1,id2,'s')) representacion.SwitchDestination(id1,id2,'s');
-            for (int id2 = 0; id2 < cs; ++id2) if (representacion.ableSwitch(id1,id2,'c')) representacion.SwitchDestination(id1,id2,'c');
-        }
-    }
+    public boolean switchDestination(int id1, int id2, char t) { return representacion.switchDestination(id1,id2,t);}
+
+    public boolean jump(int id) { return representacion.jump(id); }
 
     public int heuristica() {
         return (int) representacion.getCoste() - representacion.getVolumen();
     } //habrá que implementar funciones privadas de calculo de coste y datos aunque sea en grafo.
 
+    public int getSsize() { return representacion.getSsize();}
 
+    public int getCsize() { return representacion.getCsize();}
+    
 }
