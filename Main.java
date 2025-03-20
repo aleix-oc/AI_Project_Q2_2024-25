@@ -11,8 +11,12 @@ public class Main {
         CentrosDatos c = new CentrosDatos(4,1234);
         Graph g = new Graph(s,c);
         Estado st = new Estado(g);
-        Problem problem = new Problem(st, new hillClimbingFinderSuccessorFunction());
+        Problem problem = new Problem(st, new hillClimbingFinderSuccessorFunction(), new goalTest());
         Search search = new HillClimbingSearch();
-        SearchAgent agent = new SearchAgent(problem,search);
+        try {
+            SearchAgent agent = new SearchAgent(problem,search);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
