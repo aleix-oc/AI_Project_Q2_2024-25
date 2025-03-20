@@ -276,7 +276,7 @@ public class Graph {
         else return false;
     }
 
-    public boolean SwitchDestination(int id1, int id2, char t) {
+    public boolean switchDestination(int id1, int id2, char t) {
         Edge backup = adjs.get(id1);
         //antes de enfonsar, vemos si habrá ciclo
         adjs.put(id1,new Edge(id1,id2,t));
