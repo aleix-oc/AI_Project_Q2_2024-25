@@ -265,8 +265,17 @@ public class Graph {
         else return false;
     }
 
-    public void SwitchDestination(int id1, int id2, char t) {
+    public boolean SwitchDestination(int id1, int id2, char t) {
+        Edge backup = adjs.get(id1);
+        //antes de enfonsar, vemos si habrá ciclo
         adjs.put(id1,new Edge(id1,id2,t));
+        if (!topologicalSort()) return false;
+        //Ahora restauramos estado original y quitamos y ponemos con enfonsar
+        adjs.remove(id1);//??
+        desenfonsarVolumen(backup);//??
+        adjs.put(id1, new Edge(id1,id2,t));
+        enfonsarVolumen(adjs.get(id1);
+        return true;
     }
 
     //Switch de salto de nivel?
