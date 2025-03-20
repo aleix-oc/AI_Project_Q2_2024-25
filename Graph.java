@@ -223,7 +223,7 @@ public class Graph {
     //Auxiliar para comprobar si se puede
     private boolean topologicalSort() {
         int[] cons = Scons.clone();
-        HashSet<Integer> s = new HashSet<>;
+        HashSet<Integer> s = new HashSet<>();
         for (int i = 0; i < ssize; ++i) if (Scons[i]=0) s.add(i);
         while (!s.isEmpty()) {
             int node = s.remove(s.iterator().next());
@@ -274,7 +274,7 @@ public class Graph {
         adjs.remove(id1);//??
         desenfonsarVolumen(backup);//??
         adjs.put(id1, new Edge(id1,id2,t));
-        enfonsarVolumen(adjs.get(id1);
+        enfonsarVolumen(adjs.get(id1));
         return true;
     }
 
@@ -287,7 +287,7 @@ public class Graph {
         while (actEdge.getTipo() != 'c') {
             if (Scons[actEdge.getId2()] < 3) {
                 adjs.put(id,new Edge(id,actEdge.getId2(),'s'));
-                enfonsar(adjs.get(id);
+                enfonsar(adjs.get(id));
                 return true;
             }
             act = adjs.get(act).getId2();
