@@ -237,7 +237,7 @@ public class Graph {
             int node = iterator.next();
             iterator.remove();
             Edge edge = adjs.get(node);
-            if (edge.getTipo != 'c') {
+            if (edge.getTipo() != 'c') {
                 int son = edge.getId2();
                 --cons[son];
                 if (cons[son] == 0) {
@@ -335,5 +335,7 @@ public class Graph {
     public int getCsize() {
         return csize;
     }
+
+    public Edge getEdge(int id) {return adjs.get(id);}
 
 }
