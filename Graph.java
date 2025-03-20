@@ -225,7 +225,7 @@ public class Graph {
     //Auxiliar para comprobar si se puede
     private boolean topologicalSort() {
         int[] cons = Scons.clone();
-        HashSet<Integer> s = new HashSet<>;
+        HashSet<Integer> s = new HashSet<>();
         int count = ssize;
         for (int i = 0; i < ssize; ++i) {
             if (Scons[i]==0) s.add(i);
