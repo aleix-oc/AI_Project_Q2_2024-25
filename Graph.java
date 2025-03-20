@@ -225,21 +225,28 @@ public class Graph {
     //Auxiliar para comprobar si se puede
     private boolean topologicalSort() {
         int[] cons = Scons.clone();
-        HashSet<Integer> s = new HashSet<>();
-        for (int i = 0; i < ssize; ++i) if (Scons[i]==0) s.add(i);
+        HashSet<Integer> s = new HashSet<>;
+        int count = ssize;
+        for (int i = 0; i < ssize; ++i) {
+            if (Scons[i]==0) s.add(i);
+            --count;
+        }
+        if (count == ssize) return false;
         while (!s.isEmpty()) {
             Iterator<Integer> iterator = s.iterator();
             int node = iterator.next();
             iterator.remove();
             Edge edge = adjs.get(node);
-            if (edge.getTipo() != 'c') {
+            if (edge.getTipo != 'c') {
                 int son = edge.getId2();
-                if (cons[son] == 0) return false;
                 --cons[son];
-                s.add(son);
+                if (cons[son] == 0) {
+                    s.add(son);
+                    --count;
+                }
             }
         }
-        return true;
+        return count == 0;
     }
     //Cambiar 2 aristas
     public void switchEdges(int id1, int id2) {
