@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.TreeSet;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -290,7 +291,7 @@ public class Graph {
         while (actEdge.getTipo() != 'c') {
             if (Scons[actEdge.getId2()] < 3) {
                 adjs.put(id,new Edge(id,actEdge.getId2(),'s'));
-                enfonsarVolum(adjs.get(id));
+                enfonsarVolumen(adjs.get(id));
                 return true;
             }
             act = adjs.get(act).getId2();
