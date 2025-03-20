@@ -304,7 +304,7 @@ public class Graph {
         }
         else{
             adjs.get(id1).setDistancia(calcularDistancia(Snodes.get(id1), Snodes.get(id2)));
-            adjs.get(id1).setVolumenReal(min(backup.getVolumenFalso(), 3*Snodes.get(id2).getCapacidad()-adjs.get(id2).getVolumenReal()));
+            adjs.get(id1).setVolumenReal(min(backup.getVolumenFalso(), 3*(int)Snodes.get(id2).getCapacidad()-adjs.get(id2).getVolumenReal()));
             ++Scons[id2];
             enfonsarVolumen(adjs.get(id1));
         }
@@ -328,7 +328,7 @@ public class Graph {
                 adjs.put(id,new Edge(id,actEdge.getId2(),'s'));
                 adjs.get(id).setVolumenFalso(backup.getVolumenFalso());
                 adjs.get(id).setDistancia(calcularDistancia(Snodes.get(id), Snodes.get(actEdge.getId2())));
-                adjs.get(id).setVolumenReal(min(backup.getVolumenFalso(), 3*Snodes.get(actEdge.getId2()).getCapacidad()- adjs.get(actEdge.getId2()).getVolumenReal()));
+                adjs.get(id).setVolumenReal(min(backup.getVolumenFalso(), 3*(int)Snodes.get(actEdge.getId2()).getCapacidad()- adjs.get(actEdge.getId2()).getVolumenReal()));
                 ++Scons[actEdge.getId2()];
                 enfonsarVolumen(adjs.get(id));
                 return true;
