@@ -9,11 +9,11 @@ public class hillClimbingFinderSuccessorFunction implements SuccessorFunction {
         Estado estado = (Estado) aState;
         int ss = estado.getSsize();
         int cs = estado.getCsize();
-        for (int id1 = 0; id1 < sz; ++id1) {
-            for (int id2 = 0; id2 < sz; ++id2) {
+        /*for (int id1 = 0; id1 < ss; ++id1) {
+            for (int id2 = 0; id2 < ss; ++id2) {
                 if (id1 != id2) sucesores.add(new Successor("E",new Estado(estado.getRepresentacion()).switchEdges(id1,id2)));
             }
-        }
+        }*/
         for (int id1 = 0; id1 < ss; ++id1) {
             for (int id2 = 0; id2 < ss; ++id2) {
                 if (estado.ableSwitch(id1,id2,'s')) {

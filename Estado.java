@@ -9,11 +9,15 @@ public class Estado {
         representacion.simpleSolution();
     }
 
-    private void complexSol() {
-        representacion.complexSol();
+    private void complexSolution() {
+        representacion.complexSolution();
     }
 
-    public boolean switchEdges(int id1, int id2) { return representacion.switchEdges(id1, id2);}
+    public Edge getEdge(int id) {return representacion.getEdge(id);}
+
+    public boolean ableSwitch(int id1, int id2, char t) { return representacion.ableSwitch(id1,id2,t);}
+
+    public void switchEdges(int id1, int id2) { representacion.switchEdges(id1, id2);}
 
     public boolean switchDestination(int id1, int id2, char t) { return representacion.switchDestination(id1,id2,t);}
 
@@ -26,5 +30,8 @@ public class Estado {
     public int getSsize() { return representacion.getSsize();}
 
     public int getCsize() { return representacion.getCsize();}
-    
+
+    public static Graph getRepresentacion() {
+        return representacion;
+    }
 }
