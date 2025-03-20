@@ -141,9 +141,32 @@ public class Graph {
             int idc = previo.getId2();
             previo.setVolumenFalso(min(3 * capacidadp, previo.getVolumenFalso() + selected.getVolumenReal()));
             previo.setVolumenReal(min(previo.getVolumenReal() + selected.getVolumenReal(), 150 - Calmacenamiento[idc]));
-            Calmacenamiento[id2] = min(150, Calmacenamiento[id2] + previo.getVolumenReal());
+            Calmacenamiento[idc] = min(150, Calmacenamiento[idc] + previo.getVolumenReal());
         }
 
+    }
+
+    public void desenfonsarVolumen(Edge selected){
+
+        int id2 = selected.getId2();
+        //vf2 = vf2 - vr1, vr2 = vr2 - (vr1 - (vf2 - vr2))
+
+        Edge previo = adjs.get(id2);
+        boolean acabado = false;
+        while(previo.getTipo() != 'c' || selected.getVolumenReal() > 0 || !acabado){
+            previo.setVolumenFalso(previo.getVolumenFalso()-selected.getVolumenReal());
+            if(previo.getVolumenFalso() - previo.getVolumenReal() < selected.getVolumenReal()) previo.setVolumenReal(previo.getVolumenReal()-(selected.getVolumenReal()-(previo.getVolumenFalso()-previo.getVolumenReal())));
+            else acabado = true;
+            selected = previo;
+            previo = adjs.get(selected.getId2());
+        }
+        if(previo.getTipo() == 'c') {
+            int idc = previo.getId2();
+            int temp = previo.getVolumenReal();
+            previo.setVolumenFalso(previo.getVolumenFalso()-selected.getVolumenReal());
+            previo.setVolumenReal(previo.getVolumenReal()-(selected.getVolumenReal()-(previo.getVolumenFalso()-previo.getVolumenReal())));
+            Calmacenamiento[idc] = Calmacenamiento[idc] - (temp - previo.getVolumenReal());
+        }
     }
 
     public void simpleSolution() {
