@@ -1,4 +1,4 @@
-//Input: Número de semilla
+//package proyecto??
 import IA.Red.*;
 import aima.search.framework.Problem;
 import aima.search.framework.Search;
