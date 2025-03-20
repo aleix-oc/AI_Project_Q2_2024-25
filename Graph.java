@@ -311,15 +311,25 @@ public class Graph {
         return true;
     }
 
-    //Switch de salto de nivel?
     public boolean jump(int id) {
         if (adjs.get(id).getTipo() == 'c') return false;
         //Primero vemos si podemos, quiza todos los sucesores estan llenos o no hay...
+        Edge backup = adjs.get(id);
+
+
         int act = adjs.get(id).getId2();
         Edge actEdge = adjs.get(act);
         while (actEdge.getTipo() != 'c') {
             if (Scons[actEdge.getId2()] < 3) {
+                adjs.remove(id);
+                desenfonsarVolumen(backup);
+                --Scons[backup.getId2()];
+
                 adjs.put(id,new Edge(id,actEdge.getId2(),'s'));
+                adjs.get(id).setVolumenFalso(backup.getVolumenFalso());
+                adjs.get(id).setDistancia(calcularDistancia(Snodes.get(id), Snodes.get(actEdge.getId2())));
+                adjs.get(id).setVolumenReal(min(backup.getVolumenFalso(), 3*Snodes.get(actEdge.getId2()).getCapacidad()- adjs.get(actEdge.getId2()).getVolumenReal()));
+                ++Scons[actEdge.getId2()];
                 enfonsarVolumen(adjs.get(id));
                 return true;
             }
