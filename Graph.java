@@ -3,6 +3,7 @@ import IA.Red.*;
 import java.util.HashMap;
 import java.util.TreeSet;
 import java.util.Comparator;
+import java.util.HashSet;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -226,7 +227,9 @@ public class Graph {
         HashSet<Integer> s = new HashSet<>();
         for (int i = 0; i < ssize; ++i) if (Scons[i]==0) s.add(i);
         while (!s.isEmpty()) {
-            int node = s.remove(s.iterator().next());
+            Iterator<Integer> iterator = s.iterator();
+            int node = iterator.next();
+            iterator.remove();
             Edge edge = adjs.get(node);
             if (edge.getTipo() != 'c') {
                 int son = edge.getId2();
@@ -287,7 +290,7 @@ public class Graph {
         while (actEdge.getTipo() != 'c') {
             if (Scons[actEdge.getId2()] < 3) {
                 adjs.put(id,new Edge(id,actEdge.getId2(),'s'));
-                enfonsar(adjs.get(id));
+                enfonsarVolum(adjs.get(id));
                 return true;
             }
             act = adjs.get(act).getId2();
