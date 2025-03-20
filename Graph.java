@@ -224,11 +224,11 @@ public class Graph {
     private boolean topologicalSort() {
         int[] cons = Scons.clone();
         HashSet<Integer> s = new HashSet<>();
-        for (int i = 0; i < ssize; ++i) if (Scons[i]=0) s.add(i);
+        for (int i = 0; i < ssize; ++i) if (Scons[i]==0) s.add(i);
         while (!s.isEmpty()) {
             int node = s.remove(s.iterator().next());
             Edge edge = adjs.get(node);
-            if (edge.getTipo != 'c') {
+            if (edge.getTipo() != 'c') {
                 int son = edge.getId2();
                 if (cons[son] == 0) return false;
                 --cons[son];
