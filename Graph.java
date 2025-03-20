@@ -219,7 +219,24 @@ public class Graph {
     }
 
     //Operadores:
-    
+
+    //Auxiliar para comprobar si se puede
+    private boolean topologicalSort() {
+        int[] cons = Scons.clone();
+        HashSet<Integer> s = new HashSet<>;
+        for (int i = 0; i < ssize; ++i) if (Scons[i]=0) s.add(i);
+        while (!s.isEmpty()) {
+            int node = s.remove(s.iterator().next());
+            Edge edge = adjs.get(node);
+            if (edge.getTipo != 'c') {
+                int son = edge.getId2();
+                if (cons[son] == 0) return false;
+                --cons[son];
+                s.add(son);
+            }
+        }
+        return true;
+    }
     //Cambiar 2 aristas
     public void switchEdges(int id1, int id2) {
         Edge a = adjs.get(id1);
@@ -250,6 +267,24 @@ public class Graph {
 
     public void SwitchDestination(int id1, int id2, char t) {
         adjs.put(id1,new Edge(id1,id2,t));
+    }
+
+    //Switch de salto de nivel?
+    public boolean jump(int id) {
+        if (adjs.get(id).getTipo() == 'c') return false;
+        //Primero vemos si podemos, quiza todos los sucesores estan llenos o no hay...
+        int act = adjs.get(id).getId2();
+        Edge actEdge = adjs.get(act);
+        while (actEdge.getTipo() != 'c') {
+            if (Scons[actEdge.getId2()] < 3) {
+                adjs.put(id,new Edge(id,actEdge.getId2(),'s'));
+                enfonsar(adjs.get(id);
+                return true;
+            }
+            act = adjs.get(act).getId2();
+            actEdge = adjs.get(act);
+        }
+        return false;
     }
 
     public int getSsize() {
