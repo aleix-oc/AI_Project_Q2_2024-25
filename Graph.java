@@ -205,7 +205,7 @@ public class Graph {
     public double getCoste() {
         double coste = 0;
         for (int i = 0; i < ssize; ++i) {
-            coste += adjs.get(i).getDistancia()*adjs.get(i).getDistancia()+adjs.get(i).getVolumenFalso();
+            coste += adjs.get(i).getDistancia()*adjs.get(i).getDistancia()*adjs.get(i).getVolumenFalso();
         }
         return coste;
     }
