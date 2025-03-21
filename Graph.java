@@ -191,7 +191,7 @@ public class Graph {
             Sensor s2 = Snodes.get(j);
             double d = adjs.get(j).getDistancia();
             int vr = adjs.get(j).getVolumenReal();
-            Edge next = new Edge(i,j,'s', calcularDistancia(s1, s2), min(3*(int)s2.getCapacidad(), vr + (int)s1.getCapacidad()), (int)s1.getCapacidad());
+            Edge next = new Edge(i,j,'s', calcularDistancia(s1, s2), min(3*(int)s2.getCapacidad() - vr,(int)s1.getCapacidad()), (int)s1.getCapacidad());
             adjs.put(i, next);
             enfonsarVolumen(next);
             ++Scons[j];
