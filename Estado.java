@@ -5,11 +5,11 @@ public class Estado {
     public Estado(Graph g) {
         representacion=g;
     }
-    private void simpleSolution() {
+    public void simpleSolution() {
         representacion.simpleSolution();
     }
 
-    private void complexSolution() {
+    public void complexSolution() {
         representacion.complexSolution();
     }
 
