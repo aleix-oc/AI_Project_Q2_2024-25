@@ -228,11 +228,6 @@ public class Graph {
     private boolean topologicalSort(int removed, int added) {
         HashSet<Integer> s = new HashSet<>();
         int count = ssize;
-        for (int i = 0; i < ssize; ++i) {
-            if (Scons[i]==0) s.add(i);
-            --count;
-        }
-        if (count == ssize) return false;
         int[] cons = Scons.clone();
         if (mode == 1) ++cons[added];
         else if (mode == 2) --cons[removed];
@@ -240,6 +235,13 @@ public class Graph {
             --cons[removed];
             ++cons[added];
         }
+        for (int i = 0; i < ssize; ++i) {
+            if (Scons[i]==0) {
+                s.add(i);
+                --count;
+            }
+        }
+        if (count == ssize) return false;
         while (!s.isEmpty()) {
             Iterator<Integer> iterator = s.iterator();
             int node = iterator.next();
