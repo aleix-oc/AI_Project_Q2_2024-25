@@ -313,32 +313,36 @@ public class Graph {
         return true;
     }
 
-    public boolean jump(int id) {
-        if (adjs.get(id).getTipo() == 'c') return false;
-        //Primero vemos si podemos, quiza todos los sucesores estan llenos o no hay...
-        Edge backup = adjs.get(id);
-
-
-        int act = adjs.get(id).getId2();
-        Edge actEdge = adjs.get(act);
-        while (actEdge.getTipo() != 'c') {
-            if (Scons[actEdge.getId2()] < 3) {
-                adjs.remove(id);
-                desenfonsarVolumen(backup);
-                --Scons[backup.getId2()];
-
-                adjs.put(id,new Edge(id,actEdge.getId2(),'s'));
-                adjs.get(id).setVolumenFalso(backup.getVolumenFalso());
-                adjs.get(id).setDistancia(calcularDistancia(Snodes.get(id), Snodes.get(actEdge.getId2())));
-                adjs.get(id).setVolumenReal(min(backup.getVolumenFalso(), 3*(int)Snodes.get(actEdge.getId2()).getCapacidad()- adjs.get(actEdge.getId2()).getVolumenReal()));
-                ++Scons[actEdge.getId2()];
-                enfonsarVolumen(adjs.get(id));
-                return true;
-            }
-            act = adjs.get(act).getId2();
-            actEdge = adjs.get(act);
+    public boolean jump(int id, int id2, char t) {
+        Edge backup = adjs.get(id1);
+        //Como switchdestination pero sin comprobar ciclos
+        adjs.remove(id1);
+        if(backup.getTipo() == 'c') {
+            int idc = backup.getId2();
+            int temp = backup.getVolumenReal();
+            Calmacenamiento[idc] = Calmacenamiento[idc] - (temp);
+            --Ccons[idc];
         }
-        return false;
+        else{
+            desenfonsarVolumen(backup);
+            --Scons[backup.getId2()];
+        }
+        adjs.put(id1, new Edge(id1,id2,t));
+        adjs.get(id1).setVolumenFalso(backup.getVolumenFalso());
+        if(t == 'c'){
+            adjs.get(id1).setDistancia(calcularDistancia(Cnodes.get(id2), Snodes.get(id1)));
+            adjs.get(id1).setVolumenReal(min(backup.getVolumenFalso(), 150-Calmacenamiento[id2]));
+            ++Ccons[id2];
+            Calmacenamiento[id2] = Calmacenamiento[id2] + adjs.get(id1).getVolumenReal();
+
+        }
+        else{
+            adjs.get(id1).setDistancia(calcularDistancia(Snodes.get(id1), Snodes.get(id2)));
+            adjs.get(id1).setVolumenReal(min(backup.getVolumenFalso(), 3*(int)Snodes.get(id2).getCapacidad()-adjs.get(id2).getVolumenReal()));
+            ++Scons[id2];
+            enfonsarVolumen(adjs.get(id1));
+        }
+        return true;
     }
 
     public int getSsize() {

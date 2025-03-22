@@ -9,6 +9,25 @@ public class hillClimbingFinderSuccessorFunction implements SuccessorFunction {
         Estado estado = (Estado) aState;
         int ss = estado.getSsize();
         int cs = estado.getCsize();
+        for (int id = 0; id < ss; ++id) {
+            Edge e = estado.getEdge(id);
+            if (e.getTipo() != 'c') e = estado.getEdge(e.getId2());
+            else continue;
+            Estado aux;
+            while (e.getTipo() != 'c') {//Nos intentamos conectar a siguientes capas de sensores
+                aux = new Estado(estado.getRepresentacion());
+                if (aux.ableSwitch(id,e.getId2(),'s')) {
+                    aux.jump(id,e.getId2(),'s');
+                    sucesores.add(new Successor("J", aux));
+                }
+                e = estado.getEdge(e.getId2());
+            }
+            aux = new Estado(estado.getRepresentacion());
+            if (aux.ableSwitch(id,e.getId2(),'c')) {
+                aux.jump(id,e.getId2(),'c');
+                sucesores.add(new Successor("J", aux));
+            }
+        }
         /*for (int id1 = 0; id1 < ss; ++id1) {
             for (int id2 = 0; id2 < ss; ++id2) {
                 if (id1 != id2) sucesores.add(new Successor("E",new Estado(estado.getRepresentacion()).switchEdges(id1,id2)));
@@ -28,11 +47,7 @@ public class hillClimbingFinderSuccessorFunction implements SuccessorFunction {
                 }
             }
         }
-        for (int id = 0; id < ss; ++id) {
-            Estado aux = new Estado(estado.getRepresentacion());
-            Edge e = aux.getEdge(id);
-            if (aux.jump(id)) sucesores.add(new Successor("J",aux));
-        }
+
         return sucesores;
     }
 
