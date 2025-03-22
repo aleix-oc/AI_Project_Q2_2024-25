@@ -95,7 +95,8 @@ public class Graph {
                     int capacidadp = (int)Snodes.get(id2).getCapacidad();
                     int capacidada = (int)Snodes.get(id1).getCapacidad();
                     if (Scons[id2] < 3 && previo.getVolumenFalso()<3*capacidadp) {
-                        Edge next = new Edge(id1, id2, t, d, min(3*capacidadp, previo.getVolumenReal() + capacidada), v2);
+                        //min(3*(int)s2.getCapacidad() - vr,(int)s1.getCapacidad())
+                        Edge next = new Edge(id1, id2, t, d, min(3*capacidadp - previo.getVolumenReal(), capacidada), v2);
                         ++Scons[id2];
                         adjs.put(id1, next);
                         enfonsarVolumen(next);
