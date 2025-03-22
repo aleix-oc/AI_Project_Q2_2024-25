@@ -289,7 +289,6 @@ public class Graph {
         if(t == 'c') ++Ccons[id2];
         else ++Scons[id2];
         if (!topologicalSort()) {
-            System.out.println("Ciclo");
             adjs.put(id1,backup);
             if(backup.getTipo() == 'c') ++Ccons[backup.getId2()];
             else ++Scons[backup.getId2()];
