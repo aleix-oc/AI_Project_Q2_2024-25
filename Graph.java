@@ -225,20 +225,14 @@ public class Graph {
     //Operadores:
 
     //Auxiliar para comprobar si se puede
-    private boolean topologicalSort(int removed, int added) {
+    public boolean topologicalSort() {
+        int[] cons = Scons.clone();
         HashSet<Integer> s = new HashSet<>();
         int count = ssize;
-        int[] cons = Scons.clone();
-        if (mode == 1) ++cons[added];
-        else if (mode == 2) --cons[removed];
-        else if (mode == 3) {
-            --cons[removed];
-            ++cons[added];
-        }
         for (int i = 0; i < ssize; ++i) {
             if (Scons[i]==0) {
                 s.add(i);
-                --count;
+            --count;
             }
         }
         if (count == ssize) return false;
@@ -288,18 +282,21 @@ public class Graph {
 
     public boolean switchDestination(int id1, int id2, char t) {
         Edge backup = adjs.get(id1);
-        //voy a hacer combinaciones para saber como modificaremos las cons en topological sort
-        int mode;
-        char og = backup.getTipo();
-        if (og == 'c' && t == 'c') mode = 0;
-        else if (og == 'c' && t == 's') mode = 1;
-        else if (og == 's' && t == 'c') mode = 2;
-        else mode = 3;
         //antes de enfonsar, vemos si habrá ciclo
+        if(backup.getTipo() == 'c') --Ccons[backup.getId2()];
+        else --Scons[backup.getId2()];
         adjs.put(id1,new Edge(id1,id2,t));
-        if (!topologicalSort(backup.getId2(),id2,mode)) {
+        if(t == 'c') ++Ccons[id2];
+        else ++Scons[id2];
+        if (!topologicalSort()) {
+            System.out.println("Ciclo");
             adjs.put(id1,backup);
+            if(backup.getTipo() == 'c') ++Ccons[backup.getId2()];
+            else ++Scons[backup.getId2()];
+            if(t == 'c') --Ccons[id2];
+            else --Scons[id2];
             return false;
+
         }
         //Ahora restauramos estado original y quitamos y ponemos con enfonsar
         adjs.remove(id1);
@@ -307,11 +304,11 @@ public class Graph {
             int idc = backup.getId2();
             int temp = backup.getVolumenReal();
             Calmacenamiento[idc] = Calmacenamiento[idc] - (temp);
-            --Ccons[idc];
+            //--Ccons[idc];
         }
         else{
             desenfonsarVolumen(backup);
-            --Scons[backup.getId2()];
+            //--Scons[backup.getId2()];
         }
         adjs.put(id1, new Edge(id1,id2,t));
         adjs.get(id1).setVolumenFalso(backup.getVolumenFalso());
@@ -330,7 +327,7 @@ public class Graph {
         }
         return true;
     }
-
+    
     public boolean jump(int id, int id2, char t) {
         Edge backup = adjs.get(id1);
         //Como switchdestination pero sin comprobar ciclos
