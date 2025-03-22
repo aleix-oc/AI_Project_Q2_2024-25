@@ -143,7 +143,7 @@ public class Graph {
 
             int temp = previo.getVolumenReal();
             previo.setVolumenFalso(min(3 * capacidadp, previo.getVolumenFalso() + selected.getVolumenReal()));
-            previo.setVolumenReal(min(previo.getVolumenReal() + selected.getVolumenReal(), 150 - Calmacenamiento[idc]));
+            previo.setVolumenReal(min(temp + selected.getVolumenReal(), temp + 150 - Calmacenamiento[idc]));
             Calmacenamiento[idc] = min(150, Calmacenamiento[idc] + previo.getVolumenReal() - temp);
 
         }
