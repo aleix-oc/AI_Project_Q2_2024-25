@@ -225,15 +225,17 @@ public class Graph {
     //Operadores:
 
     //Auxiliar para comprobar si se puede
-    private boolean topologicalSort() {
-        int[] cons = Scons.clone();
-        HashSet<Integer> s = new HashSet<>();
+    private boolean topologicalSort(int removed, int added) {
         int count = ssize;
         for (int i = 0; i < ssize; ++i) {
             if (Scons[i]==0) s.add(i);
             --count;
         }
         if (count == ssize) return false;
+        int[] cons = Scons.clone();
+        HashSet<Integer> s = new HashSet<>();
+        --cons[removed];
+        ++cons[added];
         while (!s.isEmpty()) {
             Iterator<Integer> iterator = s.iterator();
             int node = iterator.next();
@@ -282,7 +284,7 @@ public class Graph {
         Edge backup = adjs.get(id1);
         //antes de enfonsar, vemos si habrá ciclo
         adjs.put(id1,new Edge(id1,id2,t));
-        if (!topologicalSort()) return false;
+        if (!topologicalSort(backup.getId2(),id2)) return false;
         //Ahora restauramos estado original y quitamos y ponemos con enfonsar
         adjs.remove(id1);
         if(backup.getTipo() == 'c') {
