@@ -128,10 +128,9 @@ public class Graph {
         int id2 = selected.getId2();
 
         Edge previo = adjs.get(id2);
-        int capacidadp = (int)Snodes.get(id2).getCapacidad();
-        while(previo.getTipo() != 'c' || previo.getVolumenFalso()<3*capacidadp){
+        while(previo.getTipo() != 'c' && previo.getVolumenFalso()<3*(int)Snodes.get(selected.getId2()).getCapacidad()){
 
-            capacidadp = (int)Snodes.get(selected.getId2()).getCapacidad();
+            int capacidadp = (int)Snodes.get(selected.getId2()).getCapacidad();
             int capacidadpp = (int)Snodes.get(previo.getId2()).getCapacidad();
             previo.setVolumenFalso(min(3*capacidadp, previo.getVolumenFalso()+selected.getVolumenReal()));
             previo.setVolumenReal(min(previo.getVolumenReal()+selected.getVolumenReal(), 3*capacidadpp-adjs.get(previo.getId2()).getVolumenReal()));
@@ -139,7 +138,7 @@ public class Graph {
             previo = adjs.get(selected.getId2());
         }
         if(previo.getTipo() == 'c') {
-            capacidadp = (int)Snodes.get(selected.getId2()).getCapacidad();
+            int capacidadp = (int)Snodes.get(selected.getId2()).getCapacidad();
             int idc = previo.getId2();
             previo.setVolumenFalso(min(3 * capacidadp, previo.getVolumenFalso() + selected.getVolumenReal()));
             previo.setVolumenReal(min(previo.getVolumenReal() + selected.getVolumenReal(), 150 - Calmacenamiento[idc]));
@@ -189,7 +188,6 @@ public class Graph {
         while (i < ssize) {
             Sensor s1 = Snodes.get(i);
             Sensor s2 = Snodes.get(j);
-            double d = adjs.get(j).getDistancia();
             int vr = adjs.get(j).getVolumenReal();
             Edge next = new Edge(i,j,'s', calcularDistancia(s1, s2), min(3*(int)s2.getCapacidad() - vr,(int)s1.getCapacidad()), (int)s1.getCapacidad());
             adjs.put(i, next);
