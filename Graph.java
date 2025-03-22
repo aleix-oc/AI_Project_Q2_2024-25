@@ -126,10 +126,8 @@ public class Graph {
 
         int id1 = selected.getId1();
         int id2 = selected.getId2();
-
         Edge previo = adjs.get(id2);
         while(previo.getTipo() != 'c' && previo.getVolumenFalso()<3*(int)Snodes.get(selected.getId2()).getCapacidad()){
-
             int capacidadp = (int)Snodes.get(selected.getId2()).getCapacidad();
             int capacidadpp = (int)Snodes.get(previo.getId2()).getCapacidad();
             previo.setVolumenFalso(min(3*capacidadp, previo.getVolumenFalso()+selected.getVolumenReal()));
@@ -138,11 +136,16 @@ public class Graph {
             previo = adjs.get(selected.getId2());
         }
         if(previo.getTipo() == 'c') {
-            int capacidadp = (int)Snodes.get(selected.getId2()).getCapacidad();
+
             int idc = previo.getId2();
+
+            int capacidadp = (int)Snodes.get(selected.getId2()).getCapacidad();
+
+            int temp = previo.getVolumenReal();
             previo.setVolumenFalso(min(3 * capacidadp, previo.getVolumenFalso() + selected.getVolumenReal()));
             previo.setVolumenReal(min(previo.getVolumenReal() + selected.getVolumenReal(), 150 - Calmacenamiento[idc]));
-            Calmacenamiento[idc] = min(150, Calmacenamiento[idc] + previo.getVolumenReal());
+            Calmacenamiento[idc] = min(150, Calmacenamiento[idc] + previo.getVolumenReal() - temp);
+
         }
 
     }
