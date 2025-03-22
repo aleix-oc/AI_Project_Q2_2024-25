@@ -234,8 +234,12 @@ public class Graph {
         if (count == ssize) return false;
         int[] cons = Scons.clone();
         HashSet<Integer> s = new HashSet<>();
-        --cons[removed];
-        ++cons[added];
+        if (mode == 1) ++cons[added];
+        else if (mode == 2) --cons[removed];
+        else if (mode == 3) {
+            --cons[removed];
+            ++cons[added];
+        }
         while (!s.isEmpty()) {
             Iterator<Integer> iterator = s.iterator();
             int node = iterator.next();
@@ -282,9 +286,19 @@ public class Graph {
 
     public boolean switchDestination(int id1, int id2, char t) {
         Edge backup = adjs.get(id1);
+        //voy a hacer combinaciones para saber como modificaremos las cons en topological sort
+        int mode;
+        char og = backup.getTipo();
+        if (og == 'c' && t == 'c') mode = 0;
+        else if (og == 'c' && t == 's') mode = 1;
+        else if (og == 's' && t == 'c') mode = 2;
+        else mode = 3;
         //antes de enfonsar, vemos si habrá ciclo
         adjs.put(id1,new Edge(id1,id2,t));
-        if (!topologicalSort(backup.getId2(),id2)) return false;
+        if (!topologicalSort(backup.getId2(),id2,mode)) {
+            adjs.put(id1,backup);
+            return false;
+        }
         //Ahora restauramos estado original y quitamos y ponemos con enfonsar
         adjs.remove(id1);
         if(backup.getTipo() == 'c') {
