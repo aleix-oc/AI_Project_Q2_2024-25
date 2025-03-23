@@ -5,9 +5,13 @@ import java.util.TreeSet;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.ArrayList;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import java.lang.reflect.Array;
+import javax.annotation.processing.ProcessingEnvironment;
 
 //𓃵 MESSI
 public class Graph {
@@ -30,6 +34,23 @@ public class Graph {
         Ccons = new int[csize];
         Calmacenamiento = new int[csize];
         adjs = new HashMap<>();
+    }
+
+    
+    public Graph(Graph other) {
+    this.ssize = other.ssize;
+    this.csize = other.csize;
+    this.Snodes = other.Snodes;
+    this.Cnodes = other.Cnodes;
+    
+    this.Scons = other.Scons.clone();
+    this.Ccons = other.Ccons.clone();
+    this.Calmacenamiento = other.Calmacenamiento.clone();
+    
+    this.adjs = new HashMap<>();
+    for (Map.Entry<Integer, Edge> entry : other.adjs.entrySet()) {
+        this.adjs.put(entry.getKey(), new Edge(entry.getValue())); // Suponiendo que Edge tenga un constructor de copia
+        }
     }
 
     public static double calcularDistancia(int x1, int y1, int x2, int y2) {
@@ -128,23 +149,29 @@ public class Graph {
         int id1 = selected.getId1();
         int id2 = selected.getId2();
         Edge previo = adjs.get(id2);
-        while(previo.getTipo() != 'c' && previo.getVolumenFalso()<3*(int)Snodes.get(selected.getId2()).getCapacidad()){
+        int sum = selected.getVolumenReal();
+
+        while(previo.getTipo() != 'c' && sum > 0){
+            int temp = previo.getVolumenReal();
             int capacidadp = (int)Snodes.get(selected.getId2()).getCapacidad();
             int capacidadpp = (int)Snodes.get(previo.getId2()).getCapacidad();
-            previo.setVolumenFalso(min(3*capacidadp, previo.getVolumenFalso()+selected.getVolumenReal()));
-            previo.setVolumenReal(min(previo.getVolumenReal()+selected.getVolumenReal(), 3*capacidadpp-adjs.get(previo.getId2()).getVolumenReal()));
+            previo.setVolumenFalso(min(3*capacidadp, previo.getVolumenFalso()+sum));
+            previo.setVolumenReal(min(previo.getVolumenReal()+sum, 3*capacidadpp-max(adjs.get(previo.getId2()).getVolumenReal() - previo.getVolumenReal(), capacidadpp)));
+            sum = previo.getVolumenReal() - temp;
             selected = previo;
             previo = adjs.get(selected.getId2());
         }
-        if(previo.getTipo() == 'c') {
+        if(previo.getTipo() == 'c' && sum > 0) {
 
             int idc = previo.getId2();
 
             int capacidadp = (int)Snodes.get(selected.getId2()).getCapacidad();
 
             int temp = previo.getVolumenReal();
-            previo.setVolumenFalso(min(3 * capacidadp, previo.getVolumenFalso() + selected.getVolumenReal()));
-            previo.setVolumenReal(min(temp + selected.getVolumenReal(), temp + 150 - Calmacenamiento[idc]));
+            previo.setVolumenFalso(min(3 * capacidadp, previo.getVolumenFalso() + sum));
+            //if(previo.getVolumenFalso()<0) throw new RuntimeException("Error e1f");
+            previo.setVolumenReal(min(temp + sum, temp + 150 - Calmacenamiento[idc]));
+            //if(previo.getVolumenFalso()<0) throw new RuntimeException("Error e1r");
             Calmacenamiento[idc] = min(150, Calmacenamiento[idc] + previo.getVolumenReal() - temp);
 
         }
@@ -157,20 +184,31 @@ public class Graph {
         //vf2 = vf2 - vr1, vr2 = vr2 - (vr1 - (vf2 - vr2))
 
         Edge previo = adjs.get(id2);
-        boolean acabado = false;
-        while(previo.getTipo() != 'c' || selected.getVolumenReal() > 0 || !acabado){
-            previo.setVolumenFalso(previo.getVolumenFalso()-selected.getVolumenReal());
-            if(previo.getVolumenFalso() - previo.getVolumenReal() < selected.getVolumenReal()) previo.setVolumenReal(previo.getVolumenReal()-(selected.getVolumenReal()-(previo.getVolumenFalso()-previo.getVolumenReal())));
-            else acabado = true;
+
+        int rest = selected.getVolumenReal();
+        while(previo.getTipo() != 'c' && rest > 0){
+            int capacidadp = (int)Snodes.get(selected.getId2()).getCapacidad();
+            //int capacidadpp = (int)Snodes.get(previo.getId2()).getCapacidad();
+            int tempf = previo.getVolumenFalso();
+            int tempr = previo.getVolumenReal();
+            previo.setVolumenFalso(previo.getVolumenFalso()-rest);
+            //if(previo.getVolumenFalso()<capacidadp) /throw new RuntimeException("Error d0f");*/
+            if(tempf - previo.getVolumenReal() < rest) previo.setVolumenReal(previo.getVolumenReal()-(rest-(tempf-previo.getVolumenReal())));
+
+            //if(previo.getVolumenReal()<0) throw new RuntimeException("Error d0r");
+            rest = tempr - previo.getVolumenReal();
             selected = previo;
             previo = adjs.get(selected.getId2());
         }
-        if(previo.getTipo() == 'c') {
+        if(previo.getTipo() == 'c' && rest > 0) {
             int idc = previo.getId2();
-            int temp = previo.getVolumenReal();
-            previo.setVolumenFalso(previo.getVolumenFalso()-selected.getVolumenReal());
-            if(previo.getVolumenFalso() - previo.getVolumenReal() < selected.getVolumenReal()) previo.setVolumenReal(previo.getVolumenReal()-(selected.getVolumenReal()-(previo.getVolumenFalso()-previo.getVolumenReal())));
-            Calmacenamiento[idc] = Calmacenamiento[idc] - (temp - previo.getVolumenReal());
+            int tempr = previo.getVolumenReal();
+            int tempf = previo.getVolumenFalso();
+            previo.setVolumenFalso(previo.getVolumenFalso()-rest);
+            //if(previo.getVolumenFalso()<=0) throw new RuntimeException("Error d1f");
+            if(tempf - previo.getVolumenReal() < rest) previo.setVolumenReal(previo.getVolumenReal()-(rest-(tempf-previo.getVolumenReal())));
+            //if(previo.getVolumenReal()<0) throw new RuntimeException("Error d1r");
+            Calmacenamiento[idc] = Calmacenamiento[idc] - (tempr - previo.getVolumenReal());
         }
     }
 
@@ -202,7 +240,6 @@ public class Graph {
         }
     }
 
-    //Sacar coste
 
     public double getCoste() {
         double coste = 0;
@@ -223,8 +260,6 @@ public class Graph {
     }
 
     //Operadores:
-
-    //Auxiliar para comprobar si se puede
     public boolean topologicalSort() {
         int[] cons = Scons.clone();
         HashSet<Integer> s = new HashSet<>();
@@ -252,6 +287,7 @@ public class Graph {
         }
         return count == 0;
     }
+
     //Cambiar 2 aristas
     public void switchEdges(int id1, int id2) {
         Edge a = adjs.get(id1);
@@ -298,65 +334,84 @@ public class Graph {
 
         }
         //Ahora restauramos estado original y quitamos y ponemos con enfonsar
-        adjs.remove(id1);
+        //adjs.remove(id1);
         if(backup.getTipo() == 'c') {
             int idc = backup.getId2();
             int temp = backup.getVolumenReal();
+            //if(temp < 0) throw new RuntimeException("Error 0r");
             Calmacenamiento[idc] = Calmacenamiento[idc] - (temp);
             //--Ccons[idc];
         }
         else{
             desenfonsarVolumen(backup);
+            ArrayList<Edge> enf = new ArrayList<>();
+            for(int i=0; i<ssize;++i){
+                if(adjs.get(i).getId2() == backup.getId2()){
+                    enf.add(adjs.get(i));
+                    desenfonsarVolumen(adjs.get(i));
+                }
+            }
+            for(int i=0; i<enf.size();++i){
+                Edge en = enf.get(i);
+                if(en.getTipo() == 'c'){
+                    en.setVolumenReal(min(en.getVolumenFalso(), 150-Calmacenamiento[en.getId2()]));
+                    Calmacenamiento[en.getId2()] = Calmacenamiento[en.getId2()] + en.getVolumenReal();
+                }
+                else {
+                    en.setVolumenReal(min(en.getVolumenFalso(), 3*(int)Snodes.get(en.getId2()).getCapacidad()-max((int)Snodes.get(en.getId2()).getCapacidad(),  adjs.get(en.getId2()).getVolumenReal())));
+                    enfonsarVolumen(en);
+                }
+            }
+
             //--Scons[backup.getId2()];
         }
         adjs.put(id1, new Edge(id1,id2,t));
         adjs.get(id1).setVolumenFalso(backup.getVolumenFalso());
+        //if(backup.getVolumenFalso() < 0) throw new RuntimeException("Error 0f");
         if(t == 'c'){
             adjs.get(id1).setDistancia(calcularDistancia(Cnodes.get(id2), Snodes.get(id1)));
             adjs.get(id1).setVolumenReal(min(backup.getVolumenFalso(), 150-Calmacenamiento[id2]));
-            ++Ccons[id2];
+            //if(adjs.get(id1).getVolumenReal() < 0) throw new RuntimeException("Error 1r");
+            //++Ccons[id2];
             Calmacenamiento[id2] = Calmacenamiento[id2] + adjs.get(id1).getVolumenReal();
 
         }
         else{
             adjs.get(id1).setDistancia(calcularDistancia(Snodes.get(id1), Snodes.get(id2)));
-            adjs.get(id1).setVolumenReal(min(backup.getVolumenFalso(), 3*(int)Snodes.get(id2).getCapacidad()-adjs.get(id2).getVolumenReal()));
-            ++Scons[id2];
+            adjs.get(id1).setVolumenReal(min(backup.getVolumenFalso(), 3*(int)Snodes.get(id2).getCapacidad()-max((int)Snodes.get(id2).getCapacidad(),  adjs.get(id2).getVolumenReal())));
+            //++Scons[id2];
+            //if(adjs.get(id1).getVolumenReal() < 0) throw new RuntimeException("Error 2r");
             enfonsarVolumen(adjs.get(id1));
         }
         return true;
     }
-    
-    public boolean jump(int id, int id2, char t) {
-        Edge backup = adjs.get(id1);
-        //Como switchdestination pero sin comprobar ciclos
-        adjs.remove(id1);
-        if(backup.getTipo() == 'c') {
-            int idc = backup.getId2();
-            int temp = backup.getVolumenReal();
-            Calmacenamiento[idc] = Calmacenamiento[idc] - (temp);
-            --Ccons[idc];
-        }
-        else{
-            desenfonsarVolumen(backup);
-            --Scons[backup.getId2()];
-        }
-        adjs.put(id1, new Edge(id1,id2,t));
-        adjs.get(id1).setVolumenFalso(backup.getVolumenFalso());
-        if(t == 'c'){
-            adjs.get(id1).setDistancia(calcularDistancia(Cnodes.get(id2), Snodes.get(id1)));
-            adjs.get(id1).setVolumenReal(min(backup.getVolumenFalso(), 150-Calmacenamiento[id2]));
-            ++Ccons[id2];
-            Calmacenamiento[id2] = Calmacenamiento[id2] + adjs.get(id1).getVolumenReal();
 
+    public boolean jump(int id) {
+        if (adjs.get(id).getTipo() == 'c') return false;
+        //Primero vemos si podemos, quiza todos los sucesores estan llenos o no hay...
+        Edge backup = adjs.get(id);
+
+
+        int act = adjs.get(id).getId2();
+        Edge actEdge = adjs.get(act);
+        while (actEdge.getTipo() != 'c') {
+            if (Scons[actEdge.getId2()] < 3) {
+                adjs.remove(id);
+                desenfonsarVolumen(backup);
+                --Scons[backup.getId2()];
+
+                adjs.put(id,new Edge(id,actEdge.getId2(),'s'));
+                adjs.get(id).setVolumenFalso(backup.getVolumenFalso());
+                adjs.get(id).setDistancia(calcularDistancia(Snodes.get(id), Snodes.get(actEdge.getId2())));
+                adjs.get(id).setVolumenReal(min(backup.getVolumenFalso(), 3*(int)Snodes.get(actEdge.getId2()).getCapacidad()- adjs.get(actEdge.getId2()).getVolumenReal()));
+                ++Scons[actEdge.getId2()];
+                enfonsarVolumen(adjs.get(id));
+                return true;
+            }
+            act = adjs.get(act).getId2();
+            actEdge = adjs.get(act);
         }
-        else{
-            adjs.get(id1).setDistancia(calcularDistancia(Snodes.get(id1), Snodes.get(id2)));
-            adjs.get(id1).setVolumenReal(min(backup.getVolumenFalso(), 3*(int)Snodes.get(id2).getCapacidad()-adjs.get(id2).getVolumenReal()));
-            ++Scons[id2];
-            enfonsarVolumen(adjs.get(id1));
-        }
-        return true;
+        return false;
     }
 
     public int getSsize() {
@@ -367,5 +422,21 @@ public class Graph {
     }
 
     public Edge getEdge(int id) {return adjs.get(id);}
+
+    public int getadjssize(){
+        return adjs.size();
+    }
+    public int[] getScons(){
+        return Scons;
+    }
+    public int[] getCcons(){
+        return Ccons;
+    }
+    public Sensores getSnodes(){
+        return Snodes;
+    }
+    public int [] getAlmacenamiento(){
+        return Calmacenamiento;
+    }
 
 }

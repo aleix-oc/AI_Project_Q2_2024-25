@@ -1,9 +1,13 @@
 
+import static java.lang.Math.sqrt;
+
+import IA.Red.*;
+
 
 public class Estado {
-    private static Graph representacion;
+    private Graph representacion;
     public Estado(Graph g) {
-        representacion=g;
+        representacion = new Graph(g);
     }
     public void simpleSolution() {
         representacion.simpleSolution();
@@ -23,15 +27,41 @@ public class Estado {
 
     public boolean jump(int id) { return representacion.jump(id); }
 
-    public int heuristica() {
-        return (int) representacion.getCoste() - representacion.getVolumen();
+    public double heuristica() {
+       // double r = 0;
+        //int caps = 0;
+        //for(int i=0; i<representacion.getSsize(); ++i){
+          //  caps += representacion.getSnodes().get(i).getCapacidad();
+        //    if(representacion.getEdge(i).getVolumenFalso() < (int) representacion.getSnodes().get(i).getCapacidad() || representacion.getEdge(i).getVolumenReal()<0 || representacion.getEdge(i).getVolumenFalso() > 3*(int) representacion.getSnodes().get(i).getCapacidad() || representacion.getEdge(i).getVolumenReal() > 3*(int) representacion.getSnodes().get(i).getCapacidad()) r = Double.MAX_VALUE;
+        //}
+        //if(representacion.getVolumen() > caps) r = Double.MAX_VALUE;
+        //if(r==0) r = representacion.getCoste() -  representacion.getSsize()* representacion.getVolumen() * representacion.getVolumen();
+        return representacion.getCoste() - representacion.getSsize() * representacion.getVolumen() * representacion.getVolumen() * representacion.getVolumen();
     } //habrá que implementar funciones privadas de calculo de coste y datos aunque sea en grafo.
 
     public int getSsize() { return representacion.getSsize();}
 
     public int getCsize() { return representacion.getCsize();}
 
-    public static Graph getRepresentacion() {
+    public Graph getRepresentacion() {
         return representacion;
+    }
+    public double getCoste() {
+        return representacion.getCoste();
+    }
+    public int getVolumen() {
+        return representacion.getVolumen();
+    }
+    public int [] getScons(){
+        return representacion.getScons();
+    }
+    public int [] getCcons(){
+        return representacion.getCcons();
+    }
+    public Sensores getSnodes(){
+        return representacion.getSnodes();
+    }
+    public int [] getAlmacenamiento(){
+        return representacion.getAlmacenamiento();
     }
 }

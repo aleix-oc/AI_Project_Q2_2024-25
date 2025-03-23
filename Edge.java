@@ -1,4 +1,3 @@
-import java.util.Objects;
 
 public class Edge {
     private double distancia;
@@ -29,6 +28,15 @@ public class Edge {
         this.distancia = d;
         this.volumenReal = v1;
         this.volumenFalso = v2;
+    }
+    // Constructor de copia
+    public Edge(Edge other) {
+        this.id1 = other.id1;
+        this.id2 = other.id2;
+        this.tipo = other.tipo;
+        this.distancia = other.distancia;
+        this.volumenReal = other.volumenReal;
+        this.volumenFalso = other.volumenFalso;
     }
 
     // Getters
