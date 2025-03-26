@@ -5,7 +5,7 @@ import java.util.List;
 
 public class hillClimbingFinderSuccessorFunction implements SuccessorFunction {
     public List getSuccessors(Object aState) {
-        ArrayList sucesores= new ArrayList<>();
+        ArrayList<String> sucesores= new ArrayList<>();//FALTABA STRING! Soy retra
         Estado estado = (Estado) aState;
         int ss = estado.getSsize();
         int cs = estado.getCsize();
