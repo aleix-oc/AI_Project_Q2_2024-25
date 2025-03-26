@@ -12,6 +12,16 @@ public class hillClimbingFinderSuccessorFunction implements SuccessorFunction {
 
         for (int id1 = 0; id1 < ss; ++id1) {
             for (int id2 = 0; id2 < ss; ++id2) {
+                if (id1 != id2) {
+                    Estado aux = new Estado(estado.getRepresentacion());
+                    aux.switchEdges(id1, id2);
+                    sucesores.add(new Successor("E", aux));
+                }
+            }
+        }
+
+        for (int id1 = 0; id1 < ss; ++id1) {
+            for (int id2 = 0; id2 < ss; ++id2) {
                 if (estado.ableSwitch(id1,id2,'s')) {
                     Estado aux = new Estado(estado.getRepresentacion());
                     if (aux.switchDestination(id1,id2,'s')){
@@ -28,7 +38,7 @@ public class hillClimbingFinderSuccessorFunction implements SuccessorFunction {
                 }
             }
         }
-        for (int id = 0; id < ss; ++id) {
+        /*for (int id = 0; id < ss; ++id) {
             Edge e = estado.getEdge(id);
             if (e.getTipo() != 'c') e = estado.getEdge(e.getId2());
             else continue;
@@ -45,7 +55,7 @@ public class hillClimbingFinderSuccessorFunction implements SuccessorFunction {
                 aux = new Estado(estado.getRepresentacion());
                 if(aux.switchDestination(id,e.getId2(),'c')) sucesores.add(new Successor("J", aux));
             }
-        }
+        }/* */
         
         return sucesores;
     }

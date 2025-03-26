@@ -25,8 +25,6 @@ public class Estado {
 
     public boolean switchDestination(int id1, int id2, char t) { return representacion.switchDestination(id1,id2,t);}
 
-    public boolean jump(int id) { return representacion.jump(id); }
-
     public double heuristica() {
         double r = 0;
         int caps = 0;

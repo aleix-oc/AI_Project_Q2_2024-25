@@ -290,12 +290,98 @@ public class Graph {
 
     //Cambiar 2 aristas
     public void switchEdges(int id1, int id2) {
-        Edge a = adjs.get(id1);
-        Edge b = adjs.get(id2);
-        a.setId1(id2);
-        b.setId1(id1);
-        adjs.put(id1,b);
-        adjs.put(id2,a);
+        Edge backup1 = adjs.get(id1);
+        Edge backup2 = adjs.get(id2);
+        Edge a = new Edge(backup1);
+        Edge b = new Edge(backup2);
+        a.setId2(backup2.getId2());
+        b.setId2(backup1.getId2());
+        adjs.put(id1,a);
+        adjs.put(id2,b);
+        if(!topologicalSort()){
+            adjs.put(id1, backup1);
+            adjs.put(id2, backup2);
+        }
+        if(backup1.getTipo() == 'c') {
+            int idc = backup1.getId2();
+            int temp = backup1.getVolumenReal();
+            //if(temp < 0) throw new RuntimeException("Error 0r");
+            Calmacenamiento[idc] = Calmacenamiento[idc] - (temp);
+            //--Ccons[idc];
+            adjs.get(id2).setDistancia(calcularDistancia(Cnodes.get(idc), Snodes.get(id2)));
+            adjs.get(id2).setVolumenReal(min(backup2.getVolumenFalso(), 150-Calmacenamiento[idc]));
+            //if(adjs.get(id1).getVolumenReal() < 0) throw new RuntimeException("Error 1r");
+            //++Ccons[id2];
+            Calmacenamiento[idc] = Calmacenamiento[idc] + adjs.get(id2).getVolumenReal();
+        }
+
+        else{
+            desenfonsarVolumen(backup1);
+            ArrayList<Edge> enf = new ArrayList<>();
+            for(int i=0; i<ssize;++i){
+                if(adjs.get(i).getId2() == backup1.getId2()){
+                    enf.add(adjs.get(i));
+                    desenfonsarVolumen(adjs.get(i));
+                }
+            }
+            for(int i=0; i<enf.size();++i){
+                Edge en = enf.get(i);
+                if(en.getTipo() == 'c'){
+                    en.setVolumenReal(min(en.getVolumenFalso(), 150-Calmacenamiento[en.getId2()]));
+                    Calmacenamiento[en.getId2()] = Calmacenamiento[en.getId2()] + en.getVolumenReal();
+                }
+                else {
+                    en.setVolumenReal(min(en.getVolumenFalso(), 3*(int)Snodes.get(en.getId2()).getCapacidad()-max((int)Snodes.get(en.getId2()).getCapacidad(),  adjs.get(en.getId2()).getVolumenReal())));
+                    enfonsarVolumen(en);
+                }
+            }
+            int ids = backup1.getId2();
+            adjs.get(id2).setDistancia(calcularDistancia(Snodes.get(id2), Snodes.get(ids)));
+            adjs.get(id2).setVolumenReal(min(backup2.getVolumenFalso(), 3*(int)Snodes.get(ids).getCapacidad()-max((int)Snodes.get(ids).getCapacidad(),  adjs.get(ids).getVolumenReal())));
+            enfonsarVolumen(adjs.get(id2));
+        }
+        //bu 2
+
+        if(backup2.getTipo() == 'c') {
+            int idc = backup2.getId2();
+            int temp = backup2.getVolumenReal();
+            //if(temp < 0) throw new RuntimeException("Error 0r");
+            Calmacenamiento[idc] = Calmacenamiento[idc] - (temp);
+            //--Ccons[idc];
+            adjs.get(id1).setDistancia(calcularDistancia(Cnodes.get(idc), Snodes.get(id1)));
+            adjs.get(id1).setVolumenReal(min(backup1.getVolumenFalso(), 150-Calmacenamiento[idc]));
+            //if(adjs.get(id1).getVolumenReal() < 0) throw new RuntimeException("Error 1r");
+            //++Ccons[id2];
+            Calmacenamiento[idc] = Calmacenamiento[idc] + adjs.get(id1).getVolumenReal();
+        }
+
+        else{
+            desenfonsarVolumen(backup2);
+            ArrayList<Edge> enf = new ArrayList<>();
+            for(int i=0; i<ssize;++i){
+                if(adjs.get(i).getId2() == backup2.getId2()){
+                    enf.add(adjs.get(i));
+                    desenfonsarVolumen(adjs.get(i));
+                }
+            }
+            for(int i=0; i<enf.size();++i){
+                Edge en = enf.get(i);
+                if(en.getTipo() == 'c'){
+                    en.setVolumenReal(min(en.getVolumenFalso(), 150-Calmacenamiento[en.getId2()]));
+                    Calmacenamiento[en.getId2()] = Calmacenamiento[en.getId2()] + en.getVolumenReal();
+                }
+                else {
+                    en.setVolumenReal(min(en.getVolumenFalso(), 3*(int)Snodes.get(en.getId2()).getCapacidad()-max((int)Snodes.get(en.getId2()).getCapacidad(),  adjs.get(en.getId2()).getVolumenReal())));
+                    enfonsarVolumen(en);
+                }
+            }
+            int ids = backup2.getId2();
+            adjs.get(id1).setDistancia(calcularDistancia(Snodes.get(id1), Snodes.get(ids)));
+            adjs.get(id1).setVolumenReal(min(backup1.getVolumenFalso(), 3*(int)Snodes.get(ids).getCapacidad()-max((int)Snodes.get(ids).getCapacidad(),  adjs.get(ids).getVolumenReal())));
+            enfonsarVolumen(adjs.get(id1));
+        }
+
+
     }
 
     //id1: Nodo cuyo destino queremos cambiar
@@ -334,7 +420,7 @@ public class Graph {
 
         }
         //Ahora restauramos estado original y quitamos y ponemos con enfonsar
-        //adjs.remove(id1);
+
         if(backup.getTipo() == 'c') {
             int idc = backup.getId2();
             int temp = backup.getVolumenReal();
@@ -384,34 +470,6 @@ public class Graph {
             enfonsarVolumen(adjs.get(id1));
         }
         return true;
-    }
-
-    public boolean jump(int id) {
-        if (adjs.get(id).getTipo() == 'c') return false;
-        //Primero vemos si podemos, quiza todos los sucesores estan llenos o no hay...
-        Edge backup = adjs.get(id);
-
-
-        int act = adjs.get(id).getId2();
-        Edge actEdge = adjs.get(act);
-        while (actEdge.getTipo() != 'c') {
-            if (Scons[actEdge.getId2()] < 3) {
-                adjs.remove(id);
-                desenfonsarVolumen(backup);
-                --Scons[backup.getId2()];
-
-                adjs.put(id,new Edge(id,actEdge.getId2(),'s'));
-                adjs.get(id).setVolumenFalso(backup.getVolumenFalso());
-                adjs.get(id).setDistancia(calcularDistancia(Snodes.get(id), Snodes.get(actEdge.getId2())));
-                adjs.get(id).setVolumenReal(min(backup.getVolumenFalso(), 3*(int)Snodes.get(actEdge.getId2()).getCapacidad()- adjs.get(actEdge.getId2()).getVolumenReal()));
-                ++Scons[actEdge.getId2()];
-                enfonsarVolumen(adjs.get(id));
-                return true;
-            }
-            act = adjs.get(act).getId2();
-            actEdge = adjs.get(act);
-        }
-        return false;
     }
 
     public int getSsize() {
