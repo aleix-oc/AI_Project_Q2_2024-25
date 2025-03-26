@@ -9,43 +9,44 @@ public class hillClimbingFinderSuccessorFunction implements SuccessorFunction {
         Estado estado = (Estado) aState;
         int ss = estado.getSsize();
         int cs = estado.getCsize();
-        int p = 0;
-        int s = 0;
-        /*for (int id1 = 0; id1 < ss; ++id1) {
-            for (int id2 = 0; id2 < ss; ++id2) {
-                if (id1 != id2) sucesores.add(new Successor("E",new Estado(estado.getRepresentacion()).switchEdges(id1,id2)));
-            }
-        }*/
+
         for (int id1 = 0; id1 < ss; ++id1) {
             for (int id2 = 0; id2 < ss; ++id2) {
                 if (estado.ableSwitch(id1,id2,'s')) {
-                    ++p;
                     Estado aux = new Estado(estado.getRepresentacion());
                     if (aux.switchDestination(id1,id2,'s')){
-                        ++s;
                          sucesores.add(new Successor("D",aux));
                     }
                 }
             }
             for (int id2 = 0; id2 < cs; ++id2) {
                 if (estado.ableSwitch(id1,id2,'c')) {
-                    ++p;
                     Estado aux = new Estado(estado.getRepresentacion());
                     if (aux.switchDestination(id1,id2,'c')){
-                        ++s;
                          sucesores.add(new Successor("D",aux));
                     }
                 }
             }
         }
-        /*for (int id = 0; id < ss; ++id) {
-            Estado aux = new Estado(estado.getRepresentacion());
-            Edge e = aux.getEdge(id);
-            if (aux.jump(id)) sucesores.add(new Successor("J",aux));
-        }*/
-       // System.out.println(p);
-       // System.out.println(s);
-       // System.out.println(sucesores.size());
+        for (int id = 0; id < ss; ++id) {
+            Edge e = estado.getEdge(id);
+            if (e.getTipo() != 'c') e = estado.getEdge(e.getId2());
+            else continue;
+            Estado aux;
+            while (e.getTipo() != 'c') {//Nos intentamos conectar a siguientes capas de sensores
+                
+                if (estado.ableSwitch(id,e.getId2(),'s')) {
+                    aux = new Estado(estado.getRepresentacion());
+                    if(aux.switchDestination(id,e.getId2(),'s')) sucesores.add(new Successor("J", aux));
+                }
+                e = estado.getEdge(e.getId2());
+            }
+            if (estado.ableSwitch(id,e.getId2(),'c')) {
+                aux = new Estado(estado.getRepresentacion());
+                if(aux.switchDestination(id,e.getId2(),'c')) sucesores.add(new Successor("J", aux));
+            }
+        }
+        
         return sucesores;
     }
 
