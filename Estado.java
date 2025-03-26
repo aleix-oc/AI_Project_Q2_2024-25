@@ -21,7 +21,7 @@ public class Estado {
 
     public boolean ableSwitch(int id1, int id2, char t) { return representacion.ableSwitch(id1,id2,t);}
 
-    public void switchEdges(int id1, int id2) { representacion.switchEdges(id1, id2);}
+    public boolean switchEdges(int id1, int id2) { return representacion.switchEdges(id1, id2);}
 
     public boolean switchDestination(int id1, int id2, char t) { return representacion.switchDestination(id1,id2,t);}
 

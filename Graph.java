@@ -289,7 +289,7 @@ public class Graph {
     }
 
     //Cambiar 2 aristas
-    public void switchEdges(int id1, int id2) {
+    public boolean switchEdges(int id1, int id2) {
         Edge backup1 = adjs.get(id1);
         Edge backup2 = adjs.get(id2);
         Edge a = new Edge(backup1);
@@ -301,6 +301,7 @@ public class Graph {
         if(!topologicalSort()){
             adjs.put(id1, backup1);
             adjs.put(id2, backup2);
+            return false;
         }
         if(backup1.getTipo() == 'c') {
             int idc = backup1.getId2();
@@ -381,7 +382,7 @@ public class Graph {
             enfonsarVolumen(adjs.get(id1));
         }
 
-
+        return true;
     }
 
     //id1: Nodo cuyo destino queremos cambiar

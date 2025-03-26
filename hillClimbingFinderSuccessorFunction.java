@@ -14,8 +14,7 @@ public class hillClimbingFinderSuccessorFunction implements SuccessorFunction {
             for (int id2 = 0; id2 < ss; ++id2) {
                 if (id1 != id2) {
                     Estado aux = new Estado(estado.getRepresentacion());
-                    aux.switchEdges(id1, id2);
-                    sucesores.add(new Successor("E", aux));
+                    if(aux.switchEdges(id1, id2)) sucesores.add(new Successor("E", aux));
                 }
             }
         }
