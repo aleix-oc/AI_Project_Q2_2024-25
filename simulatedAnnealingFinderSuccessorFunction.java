@@ -9,26 +9,12 @@ public class simulatedAnnealingFinderSuccessorFunction implements SuccessorFunct
 
     public List getSuccessors(Object aState){
         Random rand = new Random();
-        ArrayList sucesores= new ArrayList<>();
+        ArrayList<Successor> sucesores= new ArrayList<>();
         Estado estado = (Estado) aState;
         int ss = estado.getSsize();
         int cs = estado.getCsize();
         int id1 = rand.nextInt(ss);
-        int op = rand.nextInt(2);
-        bool added = false;
-        if(op==0){
-            while(!added){
-              int id2 = rand.nextInt(ss);
-              if(id1 != id2){
-                  Estado aux = new Estado(estado.getRepresentacion());
-                  if(aux.switchEdges(id1, id2)){
-                      sucesores.add(new Successor("E", aux));
-                      added = true;
-                  }
-              }
-            }
-        }
-        else {
+        boolean added = false;
           while(!added){
             int id2 = rand.nextInt(ss+cs);
             if(id2 < ss){
@@ -51,7 +37,6 @@ public class simulatedAnnealingFinderSuccessorFunction implements SuccessorFunct
                 }
             }
           }
-        }
         return sucesores;
     }
 }
