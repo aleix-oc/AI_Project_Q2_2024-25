@@ -37,24 +37,6 @@ public class hillClimbingFinderSuccessorFunction implements SuccessorFunction {
                 }
             }
         }
-        /*for (int id = 0; id < ss; ++id) {
-            Edge e = estado.getEdge(id);
-            if (e.getTipo() != 'c') e = estado.getEdge(e.getId2());
-            else continue;
-            Estado aux;
-            while (e.getTipo() != 'c') {//Nos intentamos conectar a siguientes capas de sensores
-                
-                if (estado.ableSwitch(id,e.getId2(),'s')) {
-                    aux = new Estado(estado.getRepresentacion());
-                    if(aux.switchDestination(id,e.getId2(),'s')) sucesores.add(new Successor("J", aux));
-                }
-                e = estado.getEdge(e.getId2());
-            }
-            if (estado.ableSwitch(id,e.getId2(),'c')) {
-                aux = new Estado(estado.getRepresentacion());
-                if(aux.switchDestination(id,e.getId2(),'c')) sucesores.add(new Successor("J", aux));
-            }
-        }/* */
         
         return sucesores;
     }
