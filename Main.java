@@ -25,7 +25,6 @@ public class Main {
             Graph g = new Graph(s,c);
             Estado st = new Estado(g);
             st.complexSolution();
-
             Problem problem = new Problem(st, new hillClimbingFinderSuccessorFunction(), new goalTest(), new heuristicFunction());
             Search search = new HillClimbingSearch();
             try {

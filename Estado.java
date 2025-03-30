@@ -35,7 +35,7 @@ public class Estado {
         if(representacion.getVolumen() > caps) r = Double.MAX_VALUE;
         if(r==0) r = representacion.getCoste() - 2 * representacion.getVolumen() * representacion.getVolumen();
         return r;
-    } //habrá que implementar funciones privadas de calculo de coste y datos aunque sea en grafo.
+    }
 
     public int getSsize() { return representacion.getSsize();}
 

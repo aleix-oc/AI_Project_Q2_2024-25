@@ -17,7 +17,7 @@ public class Especial{
         try {
             SearchAgent agent = new SearchAgent(problem,search);
             Estado finalState = (Estado) search.getGoalState();
-            System.out.println(finalState.getCoste());
+            System.out.println("El coste es: " + finalState.getCoste());
         } catch (Exception e) {
             e.printStackTrace();
         }

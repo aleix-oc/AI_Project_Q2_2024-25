@@ -1,0 +1,6 @@
+Para compilar los archivos de la práctica, se puede usar este comando:
+javac -cp ".:AIMA.jar" *.java
+
+Para ejecutar puedes usar la clase Main, Especial o modificarlas.
+Para ejecutar una clase puedes usar este comando:
+java -cp ".:AIMA.jar" <Nombre de la clase>

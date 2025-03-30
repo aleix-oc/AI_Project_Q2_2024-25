@@ -5,7 +5,7 @@ import java.util.List;
 
 public class hillClimbingFinderSuccessorFunction implements SuccessorFunction {
     public List getSuccessors(Object aState) {
-        ArrayList<String> sucesores= new ArrayList<>();
+        ArrayList<Successor> sucesores= new ArrayList<>();
         Estado estado = (Estado) aState;
         int ss = estado.getSsize();
         int cs = estado.getCsize();
@@ -37,7 +37,6 @@ public class hillClimbingFinderSuccessorFunction implements SuccessorFunction {
                 }
             }
         }
-        
         return sucesores;
     }
 

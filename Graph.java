@@ -48,7 +48,7 @@ public class Graph {
     
     this.adjs = new HashMap<>();
     for (Map.Entry<Integer, Edge> entry : other.adjs.entrySet()) {
-        this.adjs.put(entry.getKey(), new Edge(entry.getValue())); // Suponiendo que Edge tenga un constructor de copia
+        this.adjs.put(entry.getKey(), new Edge(entry.getValue())); 
         }
     }
 
@@ -75,7 +75,7 @@ public class Graph {
 
 
     public void complexSolution(){
-        // Usamos TreeSet con un Comparator similar al que usabamos para PriorityQueue
+        // Usamos TreeSet 
 
         TreeSet<Edge> treeSet = new TreeSet<>(Comparator
                 .comparingDouble(Edge::getVolumenReal).reversed()  // Orden por volumen real decreciente
@@ -115,7 +115,7 @@ public class Graph {
                     int capacidadp = (int)Snodes.get(id2).getCapacidad();
                     int capacidada = (int)Snodes.get(id1).getCapacidad();
                     if (Scons[id2] < 3 && previo.getVolumenFalso()<3*capacidadp) {
-                        //min(3*(int)s2.getCapacidad() - vr,(int)s1.getCapacidad())
+                    
                         Edge next = new Edge(id1, id2, t, d, min(3*capacidadp - previo.getVolumenReal(), capacidada), v2);
                         ++Scons[id2];
                         adjs.put(id1, next);
@@ -168,9 +168,9 @@ public class Graph {
 
             int temp = previo.getVolumenReal();
             previo.setVolumenFalso(min(3 * capacidadp, previo.getVolumenFalso() + sum));
-            //if(previo.getVolumenFalso()<0) throw new RuntimeException("Error e1f");
+            
             previo.setVolumenReal(min(temp + sum, temp + 150 - Calmacenamiento[idc]));
-            //if(previo.getVolumenFalso()<0) throw new RuntimeException("Error e1r");
+          
             Calmacenamiento[idc] = min(150, Calmacenamiento[idc] + previo.getVolumenReal() - temp);
 
         }
@@ -180,21 +180,18 @@ public class Graph {
     public void desenfonsarVolumen(Edge selected){
 
         int id2 = selected.getId2();
-        //vf2 = vf2 - vr1, vr2 = vr2 - (vr1 - (vf2 - vr2))
 
         Edge previo = adjs.get(id2);
 
         int rest = selected.getVolumenReal();
         while(previo.getTipo() != 'c' && rest > 0){
             int capacidadp = (int)Snodes.get(selected.getId2()).getCapacidad();
-            //int capacidadpp = (int)Snodes.get(previo.getId2()).getCapacidad();
+            
             int tempf = previo.getVolumenFalso();
             int tempr = previo.getVolumenReal();
             previo.setVolumenFalso(previo.getVolumenFalso()-rest);
-            //if(previo.getVolumenFalso()<capacidadp) /throw new RuntimeException("Error d0f");*/
             if(tempf - previo.getVolumenReal() < rest) previo.setVolumenReal(previo.getVolumenReal()-(rest-(tempf-previo.getVolumenReal())));
 
-            //if(previo.getVolumenReal()<0) throw new RuntimeException("Error d0r");
             rest = tempr - previo.getVolumenReal();
             selected = previo;
             previo = adjs.get(selected.getId2());
@@ -204,9 +201,7 @@ public class Graph {
             int tempr = previo.getVolumenReal();
             int tempf = previo.getVolumenFalso();
             previo.setVolumenFalso(previo.getVolumenFalso()-rest);
-            //if(previo.getVolumenFalso()<=0) throw new RuntimeException("Error d1f");
             if(tempf - previo.getVolumenReal() < rest) previo.setVolumenReal(previo.getVolumenReal()-(rest-(tempf-previo.getVolumenReal())));
-            //if(previo.getVolumenReal()<0) throw new RuntimeException("Error d1r");
             Calmacenamiento[idc] = Calmacenamiento[idc] - (tempr - previo.getVolumenReal());
         }
     }
@@ -305,13 +300,11 @@ public class Graph {
         if(backup1.getTipo() == 'c') {
             int idc = backup1.getId2();
             int temp = backup1.getVolumenReal();
-            //if(temp < 0) throw new RuntimeException("Error 0r");
             Calmacenamiento[idc] = Calmacenamiento[idc] - (temp);
-            //--Ccons[idc];
+            
             adjs.get(id2).setDistancia(calcularDistancia(Cnodes.get(idc), Snodes.get(id2)));
             adjs.get(id2).setVolumenReal(min(backup2.getVolumenFalso(), 150-Calmacenamiento[idc]));
-            //if(adjs.get(id1).getVolumenReal() < 0) throw new RuntimeException("Error 1r");
-            //++Ccons[id2];
+            
             Calmacenamiento[idc] = Calmacenamiento[idc] + adjs.get(id2).getVolumenReal();
         }
 
@@ -340,18 +333,16 @@ public class Graph {
             adjs.get(id2).setVolumenReal(min(backup2.getVolumenFalso(), 3*(int)Snodes.get(ids).getCapacidad()-max((int)Snodes.get(ids).getCapacidad(),  adjs.get(ids).getVolumenReal())));
             enfonsarVolumen(adjs.get(id2));
         }
-        //bu 2
 
         if(backup2.getTipo() == 'c') {
             int idc = backup2.getId2();
             int temp = backup2.getVolumenReal();
-            //if(temp < 0) throw new RuntimeException("Error 0r");
+            
             Calmacenamiento[idc] = Calmacenamiento[idc] - (temp);
-            //--Ccons[idc];
+            
             adjs.get(id1).setDistancia(calcularDistancia(Cnodes.get(idc), Snodes.get(id1)));
             adjs.get(id1).setVolumenReal(min(backup1.getVolumenFalso(), 150-Calmacenamiento[idc]));
-            //if(adjs.get(id1).getVolumenReal() < 0) throw new RuntimeException("Error 1r");
-            //++Ccons[id2];
+            
             Calmacenamiento[idc] = Calmacenamiento[idc] + adjs.get(id1).getVolumenReal();
         }
 
@@ -424,9 +415,8 @@ public class Graph {
         if(backup.getTipo() == 'c') {
             int idc = backup.getId2();
             int temp = backup.getVolumenReal();
-            //if(temp < 0) throw new RuntimeException("Error 0r");
+            
             Calmacenamiento[idc] = Calmacenamiento[idc] - (temp);
-            //--Ccons[idc];
         }
         else{
             desenfonsarVolumen(backup);
@@ -449,24 +439,21 @@ public class Graph {
                 }
             }
 
-            //--Scons[backup.getId2()];
         }
         adjs.put(id1, new Edge(id1,id2,t));
         adjs.get(id1).setVolumenFalso(backup.getVolumenFalso());
-        //if(backup.getVolumenFalso() < 0) throw new RuntimeException("Error 0f");
+
         if(t == 'c'){
             adjs.get(id1).setDistancia(calcularDistancia(Cnodes.get(id2), Snodes.get(id1)));
             adjs.get(id1).setVolumenReal(min(backup.getVolumenFalso(), 150-Calmacenamiento[id2]));
-            //if(adjs.get(id1).getVolumenReal() < 0) throw new RuntimeException("Error 1r");
-            //++Ccons[id2];
+            
             Calmacenamiento[id2] = Calmacenamiento[id2] + adjs.get(id1).getVolumenReal();
 
         }
         else{
             adjs.get(id1).setDistancia(calcularDistancia(Snodes.get(id1), Snodes.get(id2)));
             adjs.get(id1).setVolumenReal(min(backup.getVolumenFalso(), 3*(int)Snodes.get(id2).getCapacidad()-max((int)Snodes.get(id2).getCapacidad(),  adjs.get(id2).getVolumenReal())));
-            //++Scons[id2];
-            //if(adjs.get(id1).getVolumenReal() < 0) throw new RuntimeException("Error 2r");
+            
             enfonsarVolumen(adjs.get(id1));
         }
         return true;
