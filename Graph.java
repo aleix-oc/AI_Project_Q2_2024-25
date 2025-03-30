@@ -13,7 +13,6 @@ import static java.lang.Math.min;
 import java.lang.reflect.Array;
 import javax.annotation.processing.ProcessingEnvironment;
 
-//𓃵 MESSI
 public class Graph {
     private int[] Scons;
     private int[] Ccons;
